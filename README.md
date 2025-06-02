@@ -35,7 +35,6 @@ The content was extracted and adapted from the official course sheet (`Digital_S
 ## 🚀 Live Demo
 
 [Click here to view the site](https://data-security-digital-signatures.vercel.app/)  
-*(Replace this with your actual Vercel deployment link)*
 
 ## 📁 Folder Structure
 
@@ -54,5 +53,3 @@ The content was extracted and adapted from the official course sheet (`Digital_S
 - Course: Data Security  
 - Lecturer: Dr. Mahmoud Yehia  
 - TA: Eng. Eslam Osama / developer / designer
-
----
