@@ -40,16 +40,19 @@ The content was extracted and adapted from the official course sheet (`Digital_S
 ## 📁 Folder Structure
 
 /project-root
+
 │
+
 ├── index.html # Main HTML file containing the web content
+
 ├── README.md # Project documentation
+
 └── Digital_Sign_Sheet_9.pdf # Source reference document
 
-سخ الكود
 ## 🙌 Acknowledgements
 
 - Course: Data Security  
 - Lecturer: Dr. Mahmoud Yehia  
-- TA: Eng. Eslam Osama
+- TA: Eng. Eslam Osama / developer / designer
 
 ---
