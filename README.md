@@ -4,7 +4,7 @@ This project is a simple educational webpage designed to help students better un
 
 ## 📚 Purpose
 
-The content was extracted and adapted from the official course sheet (`Digital_Sign_Sheet_9.docx`) and transformed into an interactive web format to:
+The content was extracted and adapted from the official course sheet (`Digital_Sign_Sheet_9.pdf`) and transformed into an interactive web format to:
 
 - Enhance the student learning experience
 - Provide a digital, easy-to-navigate summary of critical cryptographic concepts
@@ -28,8 +28,8 @@ The content was extracted and adapted from the official course sheet (`Digital_S
 ## 🛠️ Technologies Used
 
 - HTML5
-- CSS3 (optional)
-- JavaScript (optional)
+- CSS3 
+- JavaScript 
 - Hosted on [Vercel](https://vercel.com)
 
 ## 🚀 Live Demo
