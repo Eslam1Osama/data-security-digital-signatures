@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Signature - Interactive Learning</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #00f2fe;
+            --transition: all 0.3s ease;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.2) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .download-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .download-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .navigation {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .nav-buttons {
+                flex-direction: column;
+            }
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: "🔐";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            max-width: 800px;
+            min-height: unset;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .intro-image-float {
+            float: right;
+            max-width: 60%;
+            margin: 0 0 20px 20px;
+            min-height: unset;
+            border: none;
+            background: none;
+        }
+
+        .intro-image-float.left {
+            float: left;
+            margin: 0 20px 20px 0;
+        }
+
+        .intro-image-float .card-image {
+            padding: 0;
+        }
+
+        .image-placeholder i {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .intro-main-definition {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        #intro h4 {
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #667eea;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        #intro ol,
+        #intro ul {
+            list-style-position: outside;
+            margin-left: 25px;
+            margin-bottom: 20px;
+        }
+
+        #intro li {
+            font-size: 1.05em;
+            line-height: 1.7;
+            margin-bottom: 12px;
+            color: #444;
+        }
+
+        #intro li strong {
+            color: #2c3e50;
+        }
+
+        #intro ul ul {
+            margin-left: 20px;
+            margin-top: 8px;
+            list-style-type: disc;
+        }
+
+        #intro ul ul li {
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-image img {
+            max-width: 100%;
+            max-height: none;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+
+        .attacks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .attacks-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .attacks-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .attacks-table tr:hover {
+            background-color: #f8f9ff;
+        }
+
+        .threat-level {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .threat-low { background: #d4edda; color: #155724; }
+        .threat-moderate { background: #fff3cd; color: #856404; }
+        .threat-high { background: #f8d7da; color: #721c24; }
+        .threat-critical { background: #721c24; color: white; }
+
+        .key-differences {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .key-differences h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .key-differences ol {
+            margin-left: 20px;
+        }
+
+        .key-differences li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .review-questions {
+            background: #f0f8ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .review-questions h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .question {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .question:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .question-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-title .arrow-icon {
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+            opacity: 0;
+        }
+
+        .question:hover .arrow-icon {
+            opacity: 1;
+        }
+
+        .question.active .arrow-icon {
+            transform: rotate(180deg);
+            opacity: 1;
+        }
+
+        .question-answer {
+            color: #555;
+            display: none;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            margin-top: 10px;
+        }
+
+        .question.active .question-answer {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .rsa-section {
+            text-align: center;
+            padding: 40px 30px;
+            background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+            color: white;
+            border-radius: 20px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rsa-section h3 {
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+            color: #fff;
+        }
+
+        .rsa-description-text {
+            text-align: center;
+            color: #f0f0f0;
+            font-size: 1.1em;
+            line-height: 1.7;
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .rsa-confidentiality-intro {
+            font-size: 1.3em;
+            color: #aaffaaff;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .rsa-image-caption {
+            font-size: 1.05em;
+            color: #ccddff;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .rsa-image-description {
+            font-size: 1em;
+            line-height: 1.6;
+            color: #e0e0e0;
+            max-width: 650px;
+            margin: 15px auto;
+        }
+
+        .rsa-section .image-placeholder {
+            background: none;
+            border: none;
+            max-width: 90%;
+            margin: 30px auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .attacks-table {
+                font-size: 0.9em;
+            }
+            
+            .attacks-table th,
+            .attacks-table td {
+                padding: 10px 8px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: #ccc;
+            font-size: 0.9em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        footer p {
+            margin: 0;
+            color: #eee;
+        }
+
+        .large-centered-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+        }
+
+        .intro-bottom-image {
+            float: none;
+            max-width: 700px;
+            margin: 30px auto;
+            display: block;
+            border: none;
+            background: none;
+        }
+
+        .intro-left ul ul li {
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> Cybersecurity Learning Module</h1>
+            <p>Digital Signatures</p>
+            <p>Created By Eng. Eslam Osama</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <div class="download-buttons">
+                <button class="download-btn" onclick="downloadWordFile()">
+                    <i class="fas fa-file-pdf"></i> Download Original Sheet
+                </button>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <div class="nav-buttons">
+                <button class="nav-btn" data-section="intro" onclick="scrollToSection('intro')">
+                    <i class="fas fa-book-open"></i> Introduction
+                </button>
+                <button class="nav-btn" data-section="attacks" onclick="scrollToSection('attacks')">
+                    <i class="fas fa-shield-alt"></i> Attacks & Forgeries
+                </button>
+                <button class="nav-btn" data-section="differences" onclick="scrollToSection('differences')">
+                    <i class="fas fa-cogs"></i> Key Differences
+                </button>
+                <button class="nav-btn" data-section="forgery-types" onclick="scrollToSection('forgery-types')">
+                    <i class="fas fa-mask"></i> Forgery Types
+                </button>
+                <button class="nav-btn" data-section="rsa" onclick="scrollToSection('rsa')">
+                    <i class="fas fa-key"></i> RSA Scheme
+                </button>
+                <button class="nav-btn" data-section="questions" onclick="scrollToSection('questions')">
+                    <i class="fas fa-question-circle"></i> Review Questions
+                </button>
+            </div>
+        </div>
+
+        <div id="intro" class="section">
+            <h2 class="section-title">Introduction to Digital Signatures</h2>
+            <p class="intro-main-definition"><strong>Digital Signature</strong> is a cryptographic technique that verifies the <span class="highlight">authenticity</span>, <span class="highlight">integrity</span>, and <span class="highlight">origin</span> of a digital message or document. It is created using the sender's <span class="highlight">private key</span> and verified using their <span class="highlight">public key</span>.</p>
+            
+            <h4>Key Features of Digital Signatures</h4>
+            <ol>
+                <li><strong>Authenticity</strong><br>Confirms the message is from the claimed sender (verified via public key).</li>
+                <li><strong>Integrity</strong><br>Ensures the message hasn't been altered; any change breaks the signature.</li>
+                <li><strong>Non-repudiation</strong><br>The sender cannot deny sending the message after signing it.</li>
+            </ol>
+
+            <div class="image-placeholder intro-image-float right">
+                <div class="card-image">
+                       <img src="media/image1.png" alt="Simplified Depiction of Essential Elements of Digital Signature Process">
+                    </div>
+            </div>
+
+            <h4>Important Notes:</h4>
+            <ul>
+                <li><strong>Third-Party Authentication in Digital Signatures</strong><br>
+                    A digital signature must be publicly verifiable, meaning trusted third party can check its validity — not just the sender and receiver. This is often done using a Certificate Authority (CA), which is a trusted third party.
+                </li>
+            </ul>
+            
+            <ul>
+                <li><strong>Signatures Are Not Unconditionally Secure</strong><br>
+                    Digital signatures are not 100% secure in all conditions. Here's why:
+                    <ul>
+                        <li>An attacker might eventually:</li>
+                        <li>Break the math behind the algorithm.</li>
+                        <li>Exploit weak random number generators.</li>
+                        <li>Gain computing power (quantum computing in the future).</li>
+                        <li>Try forgery attacks using public info or signed messages.</li>
+                    </ul>
+                    That's where expiration Dates comes into picture as it reduces risk over time, ensures systems regularly refresh and upgrade cryptographic methods.
+                </li>
+            </ul>
+
+            <div class="image-placeholder large-centered-image">
+                <div class="card-image">
+                       <img src="media/image2.png" alt="Obtaining certificates from Certificate Authority">
+                    </div>
+            </div>
+
+            <p style="clear: both;"></p> <!-- Clear floats -->
+        </div>
+
+        <div id="attacks" class="section">
+            <h2 class="section-title">Attacks and Forgeries</h2>
+            <p><strong>Scenario:</strong> Assume <span class="highlight">Alice is a server that runs an automated document-signing service</span> — a system that signs digital contracts when clients send requests. (Alice is the entity tended to be attacked and her signature forged).</p>
+            
+            <table class="attacks-table">
+                <thead>
+                    <tr>
+                        <th>Attack Type</th>
+                        <th>What the Attacker Does</th>
+                        <th>Example with Alice</th>
+                        <th>What the Attacker Knows</th>
+                        <th>Threat Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Key-only Attack</strong></td>
+                        <td>Tries to forge a signature knowing <strong>only Alice's public key</strong>.</td>
+                        <td>Mallory downloads Alice's public key from her website and tries to create fake signed documents.</td>
+                        <td>Public Key only</td>
+                        <td><span class="threat-level threat-low">Low (very hard)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Known Message Attack</strong></td>
+                        <td>Uses a <strong>set of valid signed documents</strong> Mallory already has seen to help forge a new one.</td>
+                        <td>Mallory collects some of Alice's old signed contracts and studies the signatures to learn patterns.</td>
+                        <td>Public Key + Some (message, signature) pairs</td>
+                        <td><span class="threat-level threat-moderate">Moderate</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Generic Chosen Message Attack</strong></td>
+                        <td>Prepares a <strong>fixed list of messages</strong>, gets signatures on them from Alice (without knowing her key), then tries to break system.</td>
+                        <td>Mallory sends 100 prepared contracts to Alice's API to be signed, hoping they'll reveal exploitable information.</td>
+                        <td>Prepared message list (before any interaction)</td>
+                        <td><span class="threat-level threat-moderate">Moderate-High</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Directed Chosen Message Attack</strong></td>
+                        <td>Similar to Generic, but messages are chosen <strong>after</strong> seeing Alice's public key.</td>
+                        <td>After getting Alice's public key, Mallory designs 100 specific contracts tailored to what the key reveals.</td>
+                        <td>Public Key + Chooses messages after seeing it</td>
+                        <td><span class="threat-level threat-high">High</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adaptive Chosen Message Attack</strong></td>
+                        <td>Mallory sends a message → sees signature → sends another, adjusting based on what she learns.</td>
+                        <td>Mallory sends 1 contract, sees signature, then sends another, adjusting each to extract info and eventually forge.</td>
+                        <td>Public Key + Can adapt messages mid-attack</td>
+                        <td><span class="threat-level threat-critical">Very High (realistic threat)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="differences" class="section">
+            <h2 class="section-title">Key Differences Between Attack Types</h2>
+            
+            <div class="key-differences">
+                <h4>🔍 Generic Chosen Message Attack vs Known Message Attack</h4>
+                <ol>
+                    <li>For <strong>Generic</strong>, messages are <strong>chosen by Mallory</strong> (attacker), but for <strong>Known</strong>, messages are <strong>chosen by Alice</strong> or occur naturally.</li>
+                    <li>For <strong>Generic</strong>, Mallory <strong>sends messages to Alice</strong> to be signed, but for <strong>Known</strong>, Mallory only <strong>observes existing signed messages</strong>.</li>
+                </ol>
+            </div>
+
+            <div class="key-differences">
+                <h4>🎯 Generic vs Directed Chosen Message Attack</h4>
+                <ol>
+                    <li>For <strong>Generic</strong>, messages are chosen <strong>before</strong> knowing Alice's public key, but for <strong>Directed</strong>, they are chosen <strong>after</strong>.</li>
+                    <li>For <strong>Generic</strong>, messages are <strong>random or generic</strong> — not tailored, but for <strong>Directed</strong>, Messages are <strong>strategically crafted</strong> to exploit potential weaknesses in Alice's public key.</li>
+                </ol>
+            </div>
+
+            <div class="key-differences">
+                <h4>🔄 Adaptive vs Directed Chosen Message Attack</h4>
+                <ol>
+                    <li>For <strong>Directed</strong>, all messages are chosen <strong>after seeing</strong> the public key but <strong>before</strong> seeing any signatures, but for <strong>Adaptive</strong>, Messages are chosen <strong>dynamically</strong>, one-by-one, based on signatures <strong>already received</strong>.</li>
+                    <li>For <strong>Directed</strong>, static list — all messages sent at once, but for <strong>Adaptive</strong>, dynamic — attacker learns and <strong>adjusts next message</strong> based on previous results.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="forgery-types" class="section">
+            <h2 class="section-title">Forgery Types Based on What the Attacker Achieves</h2>
+            
+            <table class="attacks-table">
+                <thead>
+                    <tr>
+                        <th>Forgery Type</th>
+                        <th>What It Means</th>
+                        <th>Attacker's Goal / Example</th>
+                        <th>What Attacker Knows</th>
+                        <th>Threat Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Total Break</strong></td>
+                        <td>Attacker recovers the signer's private key.</td>
+                        <td>Mallory fully learns Alice's private key and can sign any document as Alice.</td>
+                        <td>Everything (private key!)</td>
+                        <td><span class="threat-level threat-critical">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Universal Forgery</strong></td>
+                        <td>Attacker creates a signing algorithm without needing private key.</td>
+                        <td>Mallory can sign any document without the key, by finding a flaw in the algorithm.</td>
+                        <td>Public key & flaws in algorithm</td>
+                        <td><span class="threat-level threat-critical">Severe</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Selective Forgery</strong></td>
+                        <td>Attacker forges a signature for a specific message chosen ahead of time.</td>
+                        <td>Mallory targets a specific contract ("ApproveLoan") and creates a valid fake signature for it.</td>
+                        <td>Public key (and maybe prior messages)</td>
+                        <td><span class="threat-level threat-high">High</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Existential Forgery</strong></td>
+                        <td>Attacker forges a signature for at least one arbitrary message, not chosen by the attacker.</td>
+                        <td>Mallory finds a weird message (e.g., a system log) that she didn't choose, but can create a valid signature for it.</td>
+                        <td>Public key, maybe known signatures</td>
+                        <td><span class="threat-level threat-low">Low (but dangerous)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="rsa" class="section">
+            <div class="rsa-section">
+                <h3>🔒 RSA Signature Scheme (Direct Digital Signature)</h3>
+                <div class="image-placeholder" style="background: rgba(255,255,255,0.2); color: white;">
+                    <div class="card-image">
+                        <img src="media/image3.png" alt="RSA Digital Signature Process Diagram">
+                    </div>
+                </div>
+                <p class="rsa-confidentiality-intro">The following structure demonstrates the confidentiality principle in action:</p>
+                <div class="image-placeholder">
+                    <div class="card-image">
+                        <img src="media/image4.png" alt="RSA Signature Implementation Diagram">
+                    </div>
+                </div>
+                <p class="rsa-image-caption">RSA Signature Implementation Diagram</p>
+                <p class="rsa-image-description">Confidentiality is ensured by encrypting both the message and its digital signature. This encryption uses a shared secret key, known as symmetric encryption.</p>
+            </div>
+        </div>
+
+        <div id="questions" class="section">
+            <div class="review-questions">
+                <h3>📝 Review Questions</h3>
+                
+                <div class="question" onclick="toggleAnswer(this)">
+                    <div class="question-title">(1) List two disputes that can arise in the context of message authentication? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
+                    <div class="question-answer">
+                        <strong>Dispute 1:</strong> The sender denies having sent the message (non-repudiation issue).<br>
+                        <strong>Dispute 2:</strong> The receiver claims the message was altered or forged after signing (integrity issue).
+                    </div>
+                </div>
+
+                <div class="question" onclick="toggleAnswer(this)">
+                    <div class="question-title">(2) What are the properties a digital signature should have? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
+                    <div class="question-answer">
+                        <strong>Authenticity:</strong> Confirms the sender's identity.<br>
+                        <strong>Integrity:</strong> Detects any changes to the signed message.<br>
+                        <strong>Non-repudiation:</strong> Prevents the sender from denying the signature later.
+                    </div>
+                </div>
+
+                <div class="question" onclick="toggleAnswer(this)">
+                    <div class="question-title">(3) What requirements should a digital signature scheme satisfy? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
+                    <div class="question-answer">
+                        <strong>Verifiability:</strong> Third parties must be able to verify signatures.<br>
+                        <strong>Security:</strong> It should be computationally infeasible to forge signatures without the private key as only the signer can generate a valid signature for a message.
+                    </div>
+                </div>
+
+                <div class="question" onclick="toggleAnswer(this)">
+                    <div class="question-title">(4) What is the difference between direct and arbitrated digital signature? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
+                    <div class="question-answer">
+                        <strong>Direct digital signature:</strong> The receiver verifies the signature directly using the sender's public key, without a trusted third party.<br>
+                        <strong>Arbitrated digital signature:</strong> A trusted third party (arbitrator) is involved in verifying and managing signatures, which can help resolve disputes.
+                    </div>
+                </div>
+
+                <div class="question" onclick="toggleAnswer(this)">
+                    <div class="question-title">(5) In what order should the signature function and the confidentiality function be applied to a message, and why? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
+                    <div class="question-answer">
+                        <strong>First:</strong> The message is digitally signed (signature function).<br>
+                        <strong>Then:</strong> The signed message is encrypted for confidentiality.<br>
+                        <strong>Reason:</strong> Signing first ensures the signature covers the original message and can be verified after decryption. Encrypting first would prevent signature verification without decrypting first, which can cause security and efficiency issues.
+                    </div>
+                </div>
+
+                <div class="question" onclick="toggleAnswer(this)">
+                    <div class="question-title">(6) What are some threats associated with a direct digital signature scheme? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
+                    <div class="question-answer">
+                        <strong>Key-only attack:</strong> Attacker tries to forge signatures knowing only the public key.<br>
+                        <strong>Known message attack:</strong> Attacker uses known signed messages to attempt forgery.<br>
+                        <strong>Chosen message attacks:</strong> Attacker obtains signatures on messages of their choice to help forge other signatures (generic, directed, adaptive).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAnswer(element) {
+            element.classList.toggle('active');
+        }
+
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        function updateProgressBar() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / docHeight) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        window.addEventListener('scroll', updateProgressBar);
+
+        // New function to update navigation button active state
+        function updateNavButtons() {
+            const sections = document.querySelectorAll('.section');
+            const navButtons = document.querySelectorAll('.nav-btn');
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100; // Adjust for header/padding
+                const sectionBottom = sectionTop + section.offsetHeight;
+
+                if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
+                    navButtons.forEach(button => {
+                        button.classList.remove('active');
+                    });
+                    const correspondingButton = document.querySelector(`.nav-btn[data-section="${section.id}"]`);
+                    if (correspondingButton) {
+                        correspondingButton.classList.add('active');
+                    }
+                }
+            });
+        }
+
+        // Call updateNavButtons on scroll and on page load
+        window.addEventListener('scroll', updateNavButtons);
+        document.addEventListener('DOMContentLoaded', updateNavButtons);
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Set font
+            doc.setFont("helvetica");
+            
+            // Title
+            doc.setFontSize(20);
+            doc.setTextColor(40, 40, 40);
+            doc.text("Digital Signature - Study Material", 20, 30);
+            
+            // Content sections
+            let yPosition = 50;
+            const lineHeight = 7;
+            const pageHeight = 280;
+            
+            const content = [
+                "DIGITAL SIGNATURE OVERVIEW",
+                "",
+                "Digital Signature is a cryptographic technique that verifies:",
+                "• Authenticity - confirms sender's identity",
+                "• Integrity - detects message changes", 
+                "• Origin - verifies message source",
+                "",
+                "ATTACK TYPES:",
+                "",
+                "1. Key-only Attack - Uses only public key (Low threat)",
+                "2. Known Message Attack - Uses existing signed messages (Moderate)",
+                "3. Generic Chosen Message - Pre-selected messages (Moderate-High)",
+                "4. Directed Chosen Message - Messages chosen after seeing key (High)",
+                "5. Adaptive Chosen Message - Dynamic message selection (Very High)",
+                "",
+                "FORGERY TYPES:",
+                "",
+                "1. Total Break - Recovers private key (Critical)",
+                "2. Universal Forgery - Creates signing algorithm (Severe)",
+                "3. Selective Forgery - Forges specific message (High)",
+                "4. Existential Forgery - Forges arbitrary message (Low but dangerous)",
+                "",
+                "KEY PROPERTIES:",
+                "",
+                "• Verifiability - Third parties can verify",
+                "• Security - Computationally infeasible to forge",
+                "• Non-repudiation - Sender cannot deny signature",
+                "",
+                "CORRECT ORDER:",
+                "1. Sign the message first",
+                "2. Then encrypt for confidentiality",
+                "",
+                "This ensures signature verification after decryption."
+            ];
+            
+            doc.setFontSize(12);
+            
+            content.forEach((line, index) => {
+                if (yPosition > pageHeight) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                
+                if (line.includes("OVERVIEW") || line.includes("ATTACK TYPES") || 
+                    line.includes("FORGERY TYPES") || line.includes("KEY PROPERTIES") || 
+                    line.includes("CORRECT ORDER")) {
+                    doc.setFontSize(14);
+                    doc.setTextColor(102, 126, 234);
+                } else {
+                    doc.setFontSize(11);
+                    doc.setTextColor(40, 40, 40);
+                }
+                
+                doc.text(line, 20, yPosition);
+                yPosition += lineHeight;
+            });
+            
+            doc.save("Digital_Signature_Study_Material.pdf");
+        }
+
+        // Add smooth animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+
+        function downloadWordFile() {
+            // Placeholder for Word file download logic
+            window.open('assets/Digital_Sign_Sheet_9.pdf', '_blank');
+        }
+    </script>
+
+    <footer>
+        <p>Data Security Learning Module - Digital Signatures | Created for Educational Purposes | By Eng. Eslam Osama</p>
+    </footer>
+</body>
+</html>
