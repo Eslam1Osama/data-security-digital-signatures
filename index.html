@@ -1301,37 +1301,56 @@
                 }
             });
 
-            // Custom right-click menu - only disable inspect
+            // Allow normal right-click, but show copyright notice if right-click with modifier keys
             document.addEventListener('contextmenu', function(e) {
-                // Get the clicked element
-                const target = e.target;
-                
-                // Check if the right-click is on a script or code element
-                if (target.tagName === 'SCRIPT' || target.tagName === 'CODE') {
+                if (e.ctrlKey || e.shiftKey || e.altKey) {
                     e.preventDefault();
+                    showCopyrightNotice();
                     return false;
                 }
-
-                // For other elements, allow right-click but prevent inspect
-                if (e.ctrlKey || e.shiftKey) {
-                    e.preventDefault();
-                    return false;
-                }
+                // Otherwise, allow normal right-click
             });
 
-            // Additional protection against inspect
+            // Show copyright notice on DevTools shortcuts
             document.addEventListener('keydown', function(e) {
-                // Prevent Ctrl+Shift+I (Inspect)
+                // Block Ctrl+Shift+I (Inspect)
                 if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
                     e.preventDefault();
+                    showCopyrightNotice();
                     return false;
                 }
-                // Prevent F12
+                // Block F12
                 if (e.keyCode === 123) {
                     e.preventDefault();
+                    showCopyrightNotice();
+                    return false;
+                }
+                // Block Ctrl+Shift+J (Console)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+                    e.preventDefault();
+                    showCopyrightNotice();
+                    return false;
+                }
+                // Block Ctrl+Shift+C (Inspect Element)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+                    e.preventDefault();
+                    showCopyrightNotice();
                     return false;
                 }
             });
+
+            // Optionally: Detect DevTools open by window size heuristics
+            let devtoolsOpen = false;
+            setInterval(function() {
+                const widthThreshold = window.outerWidth - window.innerWidth > 160;
+                const heightThreshold = window.outerHeight - window.innerHeight > 160;
+                if ((widthThreshold || heightThreshold) && !devtoolsOpen) {
+                    devtoolsOpen = true;
+                    showCopyrightNotice();
+                } else if (!(widthThreshold || heightThreshold)) {
+                    devtoolsOpen = false;
+                }
+            }, 1000);
         })();
 
         function toggleAnswer(element) {
