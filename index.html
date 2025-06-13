@@ -1189,105 +1189,25 @@
         window.addEventListener('scroll', updateNavButtons);
         document.addEventListener('DOMContentLoaded', updateNavButtons);
 
-        function downloadPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Set font
-            doc.setFont("helvetica");
-            
-            // Title
-            doc.setFontSize(20);
-            doc.setTextColor(40, 40, 40);
-            doc.text("Digital Signature - Study Material", 20, 30);
-            
-            // Content sections
-            let yPosition = 50;
-            const lineHeight = 7;
-            const pageHeight = 280;
-            
-            const content = [
-                "DIGITAL SIGNATURE OVERVIEW",
-                "",
-                "Digital Signature is a cryptographic technique that verifies:",
-                "• Authenticity - confirms sender's identity",
-                "• Integrity - detects message changes", 
-                "• Origin - verifies message source",
-                "",
-                "ATTACK TYPES:",
-                "",
-                "1. Key-only Attack - Uses only public key (Low threat)",
-                "2. Known Message Attack - Uses existing signed messages (Moderate)",
-                "3. Generic Chosen Message - Pre-selected messages (Moderate-High)",
-                "4. Directed Chosen Message - Messages chosen after seeing key (High)",
-                "5. Adaptive Chosen Message - Dynamic message selection (Very High)",
-                "",
-                "FORGERY TYPES:",
-                "",
-                "1. Total Break - Recovers private key (Critical)",
-                "2. Universal Forgery - Creates signing algorithm (Severe)",
-                "3. Selective Forgery - Forges specific message (High)",
-                "4. Existential Forgery - Forges arbitrary message (Low but dangerous)",
-                "",
-                "KEY PROPERTIES:",
-                "",
-                "• Verifiability - Third parties can verify",
-                "• Security - Computationally infeasible to forge",
-                "• Non-repudiation - Sender cannot deny signature",
-                "",
-                "CORRECT ORDER:",
-                "1. Sign the message first",
-                "2. Then encrypt for confidentiality",
-                "",
-                "This ensures signature verification after decryption."
-            ];
-            
-            doc.setFontSize(12);
-            
-            content.forEach((line, index) => {
-                if (yPosition > pageHeight) {
-                    doc.addPage();
-                    yPosition = 20;
-                }
-                
-                if (line.includes("OVERVIEW") || line.includes("ATTACK TYPES") || 
-                    line.includes("FORGERY TYPES") || line.includes("KEY PROPERTIES") || 
-                    line.includes("CORRECT ORDER")) {
-                    doc.setFontSize(14);
-                    doc.setTextColor(102, 126, 234);
-                } else {
-                    doc.setFontSize(11);
-                    doc.setTextColor(40, 40, 40);
-                }
-                
-                doc.text(line, 20, yPosition);
-                yPosition += lineHeight;
-            });
-            
-            doc.save("Digital_Signature_Study_Material.pdf");
+        // Utility: Save and restore inline styles
+        function saveStyles(el, props) {
+            const saved = {};
+            props.forEach(p => saved[p] = el.style[p]);
+            return saved;
         }
 
-        // Add smooth animations on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+        function restoreStyles(el, saved) {
+            Object.keys(saved).forEach(p => el.style[p] = saved[p]);
+        }
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
+        // New utility for saving/restoring styles for multiple elements
+        function saveMultipleStyles(els, props) {
+            return Array.from(els).map(el => saveStyles(el, props));
+        }
 
-        document.querySelectorAll('.section').forEach(section => {
-            section.style.opacity = '0';
-            section.style.transform = 'translateY(20px)';
-            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(section);
-        });
+        function restoreMultipleStyles(els, savedArr) {
+            els.forEach((el, i) => restoreStyles(el, savedArr[i]));
+        }
 
         function downloadWordFile() {
             // Placeholder for Word file download logic
@@ -1318,23 +1238,10 @@
             else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme('dark');
         })();
 
-        // Utility: Save and restore inline styles
-        function saveStyles(el, props) {
-            const saved = {};
-            props.forEach(p => saved[p] = el.style[p]);
-            return saved;
-        }
-        function restoreStyles(el, saved) {
-            Object.keys(saved).forEach(p => el.style[p] = saved[p]);
-        }
-        // Download section as PNG (robust, pro)
+        // Download section as PNG (improved version)
         async function downloadSectionPng(btn) {
             const section = btn.closest('.section');
-            let target = section;
-            if (section.id === 'rsa') {
-                const inner = section.querySelector('.rsa-section');
-                if (inner) target = inner;
-            }
+            
             // Show all hidden answers in this section
             const hiddenAnswers = section.querySelectorAll('.question-answer');
             const prevDisplay = [];
@@ -1342,42 +1249,65 @@
                 prevDisplay[i] = el.style.display;
                 el.style.display = 'block';
             });
+
             // Hide all download buttons and nav in this section
             const buttons = section.querySelectorAll('.download-section-btn, .download-btn');
             buttons.forEach(b => b.classList.add('screenshot-hide'));
             const nav = document.querySelector('.navigation');
             if (nav) nav.classList.add('screenshot-hide');
+
             // Save and set styles for full-width, clean screenshot
-            const styleProps = ['position','width','maxWidth','left','top','zIndex','boxShadow','background','overflow','margin','padding'];
-            const saved = saveStyles(target, styleProps);
-            target.style.position = 'static';
-            target.style.width = '100vw';
-            target.style.maxWidth = '100vw';
-            target.style.left = '0';
-            target.style.top = '0';
-            target.style.zIndex = '9999';
-            target.style.boxShadow = 'none';
-            target.style.background = getComputedStyle(target).backgroundColor || 'white';
-            target.style.overflow = 'visible';
-            target.style.margin = '0';
-            target.style.padding = '0';
+            const styleProps = ['position','width','maxWidth','left','top','zIndex','boxShadow','background','overflow','margin','padding','opacity','transform','transition'];
+            const saved = saveStyles(section, styleProps);
+            
+            // Make section fully visible and remove any transitions
+            section.style.position = 'static';
+            section.style.width = '100vw';
+            section.style.maxWidth = '100vw';
+            section.style.left = '0';
+            section.style.top = '0';
+            section.style.zIndex = '9999';
+            section.style.boxShadow = 'none';
+            section.style.background = getComputedStyle(section).backgroundColor || 'white';
+            section.style.overflow = 'visible';
+            section.style.margin = '0';
+            section.style.padding = '0';
+            section.style.opacity = '1';
+            section.style.transform = 'none';
+            section.style.transition = 'none';
+
             await new Promise(r => requestAnimationFrame(r));
             await new Promise(r => setTimeout(r, 20));
-            await html2canvas(target, {backgroundColor: null, useCORS: true, scale: 2, scrollY: -window.scrollY}).then(canvas => {
+
+            try {
+                const canvas = await html2canvas(section, {
+                    backgroundColor: null,
+                    useCORS: true,
+                    scale: 2,
+                    scrollY: -window.scrollY,
+                    logging: false,
+                    allowTaint: true
+                });
+                
                 const link = document.createElement('a');
                 link.download = section.id + '.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-            });
-            // Restore
-            restoreStyles(target, saved);
+            } catch (error) {
+                console.error('Error generating section PNG:', error);
+                alert('Failed to generate section PNG. Please try again.');
+            }
+
+            // Restore all styles and visibility
+            restoreStyles(section, saved);
             buttons.forEach(b => b.classList.remove('screenshot-hide'));
             if (nav) nav.classList.remove('screenshot-hide');
             hiddenAnswers.forEach((el, i) => {
                 el.style.display = prevDisplay[i];
             });
         }
-        // Download full page as PNG (robust, pro)
+
+        // Download full page as PNG (improved version)
         async function downloadFullPagePng() {
             // Show all hidden answers
             const allAnswers = document.querySelectorAll('.question-answer');
@@ -1386,15 +1316,29 @@
                 prevDisplay[i] = el.style.display;
                 el.style.display = 'block';
             });
+
             // Hide all download buttons and nav
             const allButtons = document.querySelectorAll('.download-section-btn, .download-btn');
             allButtons.forEach(b => b.classList.add('screenshot-hide'));
             const nav = document.querySelector('.navigation');
             if (nav) nav.classList.add('screenshot-hide');
+
+            // Make all sections fully visible (remove fade-in effect)
+            const allSections = document.querySelectorAll('.section');
+            const sectionProps = ['opacity', 'transform', 'transition'];
+            const savedSectionStyles = saveMultipleStyles(allSections, sectionProps);
+            
+            allSections.forEach(section => {
+                section.style.opacity = '1';
+                section.style.transform = 'none';
+                section.style.transition = 'none';
+            });
+
             // Save and set styles for full-width, clean screenshot
             const container = document.querySelector('.container');
-            const styleProps = ['position','width','maxWidth','left','top','zIndex','boxShadow','background','overflow','margin','padding'];
-            const saved = saveStyles(container, styleProps);
+            const containerProps = ['position','width','maxWidth','left','top','zIndex','boxShadow','background','overflow','margin','padding'];
+            const savedContainer = saveStyles(container, containerProps);
+            
             container.style.position = 'static';
             container.style.width = '100vw';
             container.style.maxWidth = '100vw';
@@ -1406,22 +1350,60 @@
             container.style.overflow = 'visible';
             container.style.margin = '0';
             container.style.padding = '0';
+
             await new Promise(r => requestAnimationFrame(r));
             await new Promise(r => setTimeout(r, 20));
-            await html2canvas(container, {backgroundColor: null, useCORS: true, scale: 2, scrollY: -window.scrollY}).then(canvas => {
+
+            try {
+                const canvas = await html2canvas(container, {
+                    backgroundColor: null,
+                    useCORS: true,
+                    scale: 2,
+                    scrollY: -window.scrollY,
+                    logging: false,
+                    allowTaint: true
+                });
+                
                 const link = document.createElement('a');
                 link.download = 'full_page.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-            });
-            // Restore
-            restoreStyles(container, saved);
+            } catch (error) {
+                console.error('Error generating full page PNG:', error);
+                alert('Failed to generate full page PNG. Please try again.');
+            }
+
+            // Restore all styles and visibility
+            restoreStyles(container, savedContainer);
+            restoreMultipleStyles(allSections, savedSectionStyles);
             allButtons.forEach(b => b.classList.remove('screenshot-hide'));
             if (nav) nav.classList.remove('screenshot-hide');
             allAnswers.forEach((el, i) => {
                 el.style.display = prevDisplay[i];
             });
         }
+
+        // Add smooth animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
     </script>
 
     <footer>
