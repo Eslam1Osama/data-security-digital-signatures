@@ -681,8 +681,8 @@
 
         footer {
             text-align: center;
-            padding: 20px;
-            margin-top: 30px;
+            padding: 10px;
+            margin-top: 20px;
             color: var(--text-secondary);
             font-size: 0.9em;
             background: var(--footer-bg);
@@ -832,6 +832,152 @@
             width: 100vw !important;
             max-width: 100vw !important;
             overflow: visible !important;
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .copyright-notice {
+            margin-top: 8px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .copyright-notice p {
+            margin: 5px 0;
+        }
+
+        .terms {
+            font-size: 0.85em;
+            max-width: 800px;
+            margin: 10px auto;
+            padding: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .disclaimer {
+            font-size: 0.8em;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        [data-theme="dark"] .terms {
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .copyright-notice {
+                font-size: 0.8em;
+            }
+            .terms {
+                font-size: 0.75em;
+                padding: 8px;
+            }
+            .disclaimer {
+                font-size: 0.7em;
+            }
+        }
+
+        /* Add these styles to your existing CSS */
+        .copyright-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin: 3px 0;
+        }
+
+        .copyright-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .copyright-btn i {
+            font-size: 1.1em;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: -400px; /* Start off-screen */
+            background: var(--section-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            max-width: 380px;
+            z-index: 1000;
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .notification.show {
+            left: 20px;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 5px;
+            transition: var(--transition);
+        }
+
+        .notification-close:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        .notification-content {
+            color: var(--text-main);
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .notification-content p {
+            margin: 8px 0;
+        }
+
+        .notification-content .disclaimer {
+            font-style: italic;
+            opacity: 0.8;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .notification {
+                max-width: calc(100% - 40px);
+                left: -100%;
+            }
         }
     </style>
 </head>
@@ -1145,6 +1291,49 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
+        // Basic code protection
+        (function() {
+            // Prevent viewing source code
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.keyCode === 85) { // Ctrl+U
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Custom right-click menu - only disable inspect
+            document.addEventListener('contextmenu', function(e) {
+                // Get the clicked element
+                const target = e.target;
+                
+                // Check if the right-click is on a script or code element
+                if (target.tagName === 'SCRIPT' || target.tagName === 'CODE') {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // For other elements, allow right-click but prevent inspect
+                if (e.ctrlKey || e.shiftKey) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Additional protection against inspect
+            document.addEventListener('keydown', function(e) {
+                // Prevent Ctrl+Shift+I (Inspect)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Prevent F12
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        })();
+
         function toggleAnswer(element) {
             element.classList.toggle('active');
         }
@@ -1404,10 +1593,56 @@
             section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
             observer.observe(section);
         });
+
+        // Copyright notice functionality
+        function showCopyrightNotice() {
+            const notification = document.getElementById('copyrightNotification');
+            notification.classList.add('show');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (notification.classList.contains('show')) {
+                    hideCopyrightNotice();
+                }
+            }, 5000);
+        }
+
+        function hideCopyrightNotice() {
+            const notification = document.getElementById('copyrightNotification');
+            notification.classList.remove('show');
+        }
+
+        // Show notification on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(showCopyrightNotice, 1000);
+        });
     </script>
 
     <footer>
-        <p>Data Security Learning Module - Digital Signatures | Created for Educational Purposes | By Eng. Eslam Osama</p>
+        <div class="footer-content">
+            <p>Data Security Learning Module - Digital Signatures | Created for Educational Purposes | By Eng. Eslam Osama</p>
+            <div class="copyright-notice">
+                <button class="copyright-btn" onclick="showCopyrightNotice()">
+                    <i class="fas fa-copyright"></i> All Rights Reserved
+                </button>
+            </div>
+        </div>
     </footer>
+
+    <!-- Copyright Notification -->
+    <div class="notification" id="copyrightNotification">
+        <div class="notification-header">
+            <div class="notification-title">
+                <i class="fas fa-shield-alt"></i> Copyright Notice
+            </div>
+            <button class="notification-close" onclick="hideCopyrightNotice()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="notification-content">
+            <p>This content is protected by copyright law. Unauthorized copying, distribution, or use of this material is strictly prohibited. The code, design, and content of this educational module are the exclusive property of the creator. Any reproduction or distribution without express written permission is a violation of copyright law.</p>
+            <p class="disclaimer">This module is provided for educational purposes only. The creator makes no warranties about the completeness, reliability, or accuracy of this information.</p>
+        </div>
+    </div>
 </body>
 </html>
