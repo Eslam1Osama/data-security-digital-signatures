@@ -157,7 +157,7 @@
 
         .nav-btn {
             background: var(--nav-btn-bg);
-            color: var(--text-main);
+            color: white;
             border: none;
             padding: 12px 20px;
             border-radius: 25px;
@@ -169,15 +169,8 @@
             gap: 8px;
         }
 
-        .nav-btn:hover {
+        .nav-btn:hover, .nav-btn.active {
             background: var(--nav-btn-active-bg);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
-        }
-
-        .nav-btn.active {
-            background: var(--nav-btn-active-bg);
-            color: var(--text-main);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
         }
@@ -1228,26 +1221,12 @@
         </div>
 
         <div class="navigation">
-            <div class="nav-buttons">
-                <button class="nav-btn active" data-section="intro">
-                    <i class="fas fa-book-open"></i> Introduction
-                </button>
-                <button class="nav-btn" data-section="attacks">
-                    <i class="fas fa-shield-virus"></i> Attacks & Forgeries
-                </button>
-                <button class="nav-btn" data-section="differences">
-                    <i class="fas fa-exchange-alt"></i> Key Differences
-                </button>
-                <button class="nav-btn" data-section="forgery-types">
-                    <i class="fas fa-mask"></i> Forgery Types
-                </button>
-                <button class="nav-btn" data-section="rsa">
-                    <i class="fas fa-key"></i> RSA Scheme
-                </button>
-                <button class="nav-btn" data-section="questions">
-                    <i class="fas fa-question-circle"></i> Review Questions
-                </button>
-            </div>
+            <button class="nav-btn active" data-section="intro"><i class="fas fa-book-open"></i> Introduction</button>
+            <button class="nav-btn" data-section="attacks"><i class="fas fa-user-secret"></i> Attacks & Forgeries</button>
+            <button class="nav-btn" data-section="differences"><i class="fas fa-cogs"></i> Key Differences</button>
+            <button class="nav-btn" data-section="forgery-types"><i class="fas fa-mask"></i> Forgery Types</button>
+            <button class="nav-btn" data-section="rsa"><i class="fas fa-key"></i> RSA Scheme</button>
+            <button class="nav-btn" data-section="questions"><i class="fas fa-question-circle"></i> Review Questions</button>
             <div class="nav-dropdown-container">
                 <select id="navDropdown" class="nav-dropdown">
                     <option value="intro">Introduction</option>
@@ -1539,58 +1518,41 @@
                 setTheme('dark');
             }
 
-            // --- Progress Bar & Nav on Scroll ---
-            function onScroll() {
-                // Progress Bar
-                const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-                const progress = scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0;
+            // --- Progress Bar ---
+            function updateProgressBar() {
+                const activeSection = document.querySelector('.section.active');
+                if (!activeSection) return;
+
+                const sectionIndex = Array.from(sections).indexOf(activeSection);
+                const progress = (sectionIndex / (sections.length - 1)) * 100;
                 progressBar.style.width = progress + '%';
-
-                // Active Nav Button based on scroll position
-                let currentSection = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    if (window.scrollY >= sectionTop - 150) { // 150px offset for better UX
-                        currentSection = section.id;
-                    }
-                });
-
-                navButtons.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.section === currentSection);
-                });
-                if(navDropdown.value !== currentSection && currentSection) {
-                    navDropdown.value = currentSection;
-                }
             }
 
-            // --- Section Navigation ---
+
+            // --- Navigation ---
             function showSection(sectionId) {
-                // 1. Update the active state of the main section content
-                sections.forEach(s => s.classList.remove('active'));
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
                 const activeSection = document.getElementById(sectionId);
                 if (activeSection) {
                     activeSection.classList.add('active');
                 }
-
-                // 2. Scroll the relevant section into view
-                if (activeSection) {
-                    activeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                navButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.section === sectionId);
+                });
+                if(navDropdown.value !== sectionId) {
+                    navDropdown.value = sectionId;
                 }
+                updateProgressBar();
             }
 
-            // --- Event Listeners for Navigation ---
             navButtons.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    // When a button is clicked, we show the corresponding section.
-                    // The onScroll event will handle updating the active button state.
-                    showSection(btn.dataset.section);
-                });
+                btn.addEventListener('click', () => showSection(btn.dataset.section));
             });
             
-            navDropdown.addEventListener('change', () => {
-                 showSection(navDropdown.value);
-            });
+            navDropdown.addEventListener('change', () => showSection(navDropdown.value));
 
 
             // --- Accordion/Question Toggle ---
