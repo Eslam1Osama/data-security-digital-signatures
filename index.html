@@ -44,7 +44,6 @@
             --nav-bg: rgba(0, 50, 61, 0.95);
             --nav-btn-bg: linear-gradient(90deg, #00323d, #4DD0E1);
             --nav-btn-active-bg: linear-gradient(90deg, #4DD0E1, #00323d);
-            --transition: all 0.3s cubic-bezier(.4,2,.6,1);
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
         }
 
@@ -60,16 +59,8 @@
             color: var(--text-main);
             background: var(--bg-gradient);
             min-height: 100vh;
-            font-size: 16px; /* Base font size */
+            font-size: 16px;
         }
-        
-        body.screenshot-mode {
-            background: white !important;
-        }
-        [data-theme="dark"] body.screenshot-mode {
-            background: #001f26 !important;
-        }
-
 
         .container {
             max-width: 1200px;
@@ -166,7 +157,7 @@
 
         .nav-btn {
             background: var(--nav-btn-bg);
-            color: white;
+            color: var(--text-main);
             border: none;
             padding: 12px 20px;
             border-radius: 25px;
@@ -178,39 +169,37 @@
             gap: 8px;
         }
 
-        .nav-btn:hover, .nav-btn.active {
+        .nav-btn:hover {
             background: var(--nav-btn-active-bg);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
         }
-        
+
+        .nav-btn.active {
+            background: var(--nav-btn-active-bg);
+            color: var(--text-main);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
         .section {
-            background: var(--section-bg);
+            background: var(--blue1);
             backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 25px;
             box-shadow: var(--shadow);
-            display: none; /* Hidden by default, shown by JS */
-            animation: fadeIn 0.5s ease-in-out;
+            transition: transform 0.3s ease;
+            position: relative;
+            display: none;
         }
-
-        .screenshot-mode .section {
-             background: var(--section-bg) !important;
-             backdrop-filter: none !important;
-        }
-        [data-theme="dark"] .screenshot-mode .section {
-             background: var(--blue1) !important;
-        }
-
-
         .section.active {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* White background for intro section in light mode */
+        :root:not([data-theme="dark"]) #intro.section {
+            background: #ffffff;
         }
 
         .section-title {
@@ -221,21 +210,27 @@
             border-bottom: 3px solid var(--secondary);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            text-align: left;
         }
-        
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+        }
+
         .image-placeholder {
             width: 100%;
             max-width: 800px;
-            min-height: unset;
-            background: none;
-            border: none;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             margin: 20px auto;
             padding: 0;
+            background: none;
+            border: none;
+        }
+        
+        .card-image img {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .intro-image-float {
@@ -243,30 +238,30 @@
             max-width: 50%;
             margin: 0 0 20px 20px;
         }
-
+        
         .intro-image-float.left {
             float: left;
             margin: 0 20px 20px 0;
         }
         
-        .card-image img {
-            max-width: 100%;
-            height: auto;
-            object-fit: contain;
-            display: block;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        .large-centered-image {
+            max-width: 900px;
         }
-
-        .intro-main-definition {
-            font-size: 1.2em;
+        
+        /* Enlarge RSA images */
+        .rsa-section .image-placeholder {
+             max-width: 900px; /* Increased size for visibility */
+        }
+        
+        .intro-main-definition, #intro p {
+            font-size: 1.1em;
             line-height: 1.8;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: var(--text-main);
         }
 
         #intro h4 {
-            font-size: 1.5em;
+            font-size: 1.4em;
             margin-top: 30px;
             margin-bottom: 15px;
             color: var(--primary);
@@ -274,8 +269,7 @@
             padding-bottom: 5px;
         }
 
-        #intro ol,
-        #intro ul {
+        #intro ol, #intro ul {
             list-style-position: outside;
             margin-left: 25px;
             margin-bottom: 20px;
@@ -290,17 +284,15 @@
         #intro li strong {
             color: var(--primary);
         }
-        
+
         #intro ul ul {
             margin-left: 20px;
-            margin-top: 8px;
+            margin-top: 10px;
             list-style-type: disc;
         }
 
         #intro ul ul li {
             font-size: 0.95em;
-            line-height: 1.6;
-            margin-bottom: 8px;
             color: var(--text-secondary);
         }
 
@@ -308,10 +300,20 @@
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-            background: var(--blue3);
+            background: var(--section-bg);
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .attacks-table thead, .attacks-table tbody {
+            display: table;
+            width: 100%;
+            min-width: 800px; /* Ensure table has a minimum width for scrolling */
+            table-layout: fixed;
         }
 
         .attacks-table th {
@@ -325,39 +327,37 @@
         .attacks-table td {
             padding: 15px;
             border-bottom: 1px solid var(--blue1);
-            color: var(--text-secondary);
-        }
-        [data-theme="dark"] .attacks-table td {
-             color: var(--text-main);
         }
 
         .attacks-table tr:hover {
             background-color: var(--blue2);
         }
-        [data-theme="dark"] .attacks-table tr:hover {
-            background-color: var(--blue1);
-        }
 
         .threat-level {
-            padding: 5px 10px;
+            padding: 5px 12px;
             border-radius: 15px;
             font-size: 0.9em;
             font-weight: bold;
-            color: var(--text-main);
+            display: inline-block;
         }
 
-        .threat-low { background: #c8e6c9; color: #2e7d32; }
-        .threat-moderate { background: #fff9c4; color: #fbc02d; }
-        .threat-high { background: #ffccbc; color: #d84315; }
-        .threat-critical { background: #ffcdd2; color: #c62828; }
+        .threat-low { background-color: #c8e6c9; color: #2e7d32; }
+        .threat-moderate { background-color: #fff9c4; color: #fbc02d; }
+        .threat-high { background-color: #ffccbc; color: #d84315; }
+        .threat-critical { background-color: #ffcdd2; color: #c62828; }
+        
+        [data-theme="dark"] .threat-low { background-color: #2e7d32; color: #c8e6c9; }
+        [data-theme="dark"] .threat-moderate { background-color: #fbc02d; color: #fff9c4; }
+        [data-theme="dark"] .threat-high { background-color: #d84315; color: #ffccbc; }
+        [data-theme="dark"] .threat-critical { background-color: #c62828; color: #ffcdd2; }
 
         .key-differences {
-            background: var(--blue2);
+            background: var(--section-bg);
             border-left: 4px solid var(--primary);
             padding: 20px;
-            margin: 20px 0;
+            margin: 25px 0;
             border-radius: 0 10px 10px 0;
-            color: var(--text-secondary);
+            box-shadow: var(--shadow);
         }
 
         .key-differences h4 {
@@ -374,44 +374,88 @@
             margin-bottom: 10px;
             line-height: 1.6;
         }
-
-        .review-questions-container {
+        
+        .review-questions-list {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
+            padding: 10px;
+        }
+
+        .review-questions-controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 35px;
+        }
+
+        .toggle-all-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-all-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .toggle-all-btn .fa-eye-slash {
+            display: none;
+        }
+
+        .toggle-all-btn.all-shown .fa-eye {
+            display: none;
+        }
+
+        .toggle-all-btn.all-shown .fa-eye-slash {
+            display: inline-block;
         }
         
         .question {
-            background: var(--blue2);
-            color: var(--text-main);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            background: var(--section-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
+            margin-bottom: 20px;
+            border: 1px solid var(--blue1);
         }
-
+        
         .question:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: var(--primary);
         }
 
         .question-title {
             font-weight: bold;
             color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 1.1em;
+            margin-bottom: 0;
+            font-size: 1.2em;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            padding: 5px 0;
         }
-
+        
         .question-title .arrow-icon {
-            transition: transform 0.3s ease;
+            font-size: 1.2em;
+            transition: transform 0.4s ease;
+            color: var(--primary);
         }
 
-        .question.active .arrow-icon {
+        .question.open .arrow-icon {
             transform: rotate(180deg);
         }
 
@@ -419,16 +463,94 @@
             color: var(--text-secondary);
             max-height: 0;
             overflow: hidden;
-            padding-top: 0;
-            margin-top: 0;
-            border-top: 1px solid var(--blue1);
-            transition: max-height 0.4s ease-out, padding-top 0.4s ease-out, margin-top 0.4s ease-out;
+            padding: 0;
+            margin: 0;
+            border-top: 1px solid transparent;
+            transition: all 0.5s ease-out;
+            font-size: 1.1em;
+            line-height: 1.8;
+            opacity: 0;
+            font-weight: 500;
         }
 
-        .question.active .question-answer {
-            max-height: 500px;
-            padding-top: 15px;
+        .question.open .question-answer {
+            max-height: 1000px;
+            padding: 20px 0 10px 0;
             margin-top: 15px;
+            border-top-color: var(--blue1);
+            opacity: 1;
+            color: var(--text-main);
+            text-shadow: 0 0 1px rgba(0,0,0,0.1);
+        }
+
+        /* Light mode specific styles */
+        [data-theme="light"] .question-answer {
+            color: #2c3e50;
+        }
+
+        [data-theme="light"] .question.open .question-answer {
+            color: #1a2530;
+            text-shadow: 0 0 1px rgba(0,0,0,0.05);
+        }
+
+        /* Dark mode specific styles */
+        [data-theme="dark"] .question-answer {
+            color: #E0F7FA;
+        }
+
+        [data-theme="dark"] .question.open .question-answer {
+            color: #FFFFFF;
+            text-shadow: 0 0 1px rgba(255,255,255,0.1);
+        }
+
+        /* Enhance strong text in answers */
+        .question-answer strong {
+            color: var(--primary);
+            font-weight: 600;
+            text-shadow: none;
+        }
+
+        [data-theme="light"] .question-answer strong {
+            color: #006064;
+        }
+
+        [data-theme="dark"] .question-answer strong {
+            color: #4DD0E1;
+        }
+
+        /* Improve answer text readability */
+        .question-answer p {
+            margin-bottom: 15px;
+            text-align: justify;
+            letter-spacing: 0.3px;
+        }
+
+        /* Add subtle background to answers for better contrast */
+        .question.open .question-answer {
+            background: linear-gradient(
+                to right,
+                var(--section-bg),
+                var(--blue3)
+            );
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        [data-theme="light"] .question.open .question-answer {
+            background: linear-gradient(
+                to right,
+                var(--section-bg),
+                var(--blue2)
+            );
+        }
+
+        [data-theme="dark"] .question.open .question-answer {
+            background: linear-gradient(
+                to right,
+                var(--section-bg),
+                var(--blue1)
+            );
         }
 
         .highlight {
@@ -440,56 +562,33 @@
         }
 
         .rsa-section {
-            padding: 20px;
-            background: var(--blue1);
-            border-radius: 15px;
+            text-align: center;
+            padding: 40px 30px;
+            background: var(--blue2);
+            border-radius: 20px;
+            margin: 30px 0;
+            box-shadow: var(--shadow);
         }
 
         .rsa-section h3 {
-            text-align: center;
-            font-size: clamp(1.6em, 4vw, 2em);
-            color: var(--primary);
+            font-size: clamp(1.8em, 4.5vw, 2.2em);
             margin-bottom: 25px;
+            color: var(--primary);
         }
 
-        .rsa-image-container {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            align-items: center;
-            justify-content: center;
+        .rsa-section p {
+            font-size: 1.1em;
+            line-height: 1.7;
+            max-width: 800px;
+            margin: 15px auto;
         }
 
-        .rsa-image-wrapper {
-            width: 100%;
-            max-width: 900px; /* Adjust max-width as needed */
-            background: var(--section-bg);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-        
-        .rsa-image-wrapper img {
-            width: 100%;
-            height: auto;
-            max-height: 450px;
-            object-fit: contain;
-        }
-
-        .rsa-image-wrapper p {
-            margin-top: 15px;
-            font-size: 1em;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-        
         .progress-bar {
             width: 100%;
             height: 6px;
             background: var(--blue1);
             border-radius: 3px;
-            margin: 20px auto 0 auto;
+            margin: 20px 0;
             overflow: hidden;
         }
 
@@ -503,25 +602,22 @@
         footer {
             text-align: center;
             padding: 20px;
-            margin-top: 20px;
-            color: white;
+            margin-top: 30px;
+            color: var(--text-main);
             font-size: 0.9em;
             background: var(--footer-bg);
-            border-radius: 15px 15px 0 0;
+            border-radius: 20px 20px 0 0;
         }
         
-        .large-centered-image {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px auto;
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        /* Theme Toggle Switch */
         .theme-toggle {
             position: absolute;
-            top: 20px;
-            right: 30px;
+            top: 15px;
+            right: 20px;
             z-index: 10;
         }
         .toggle-switch {
@@ -543,7 +639,6 @@
             background: white;
             border-radius: 50%;
             transition: left 0.3s cubic-bezier(.4,2,.6,1), background 0.3s;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.10);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -551,28 +646,18 @@
             color: var(--primary);
             overflow: hidden;
         }
-        .toggle-slider .icon-sun,
-        .toggle-slider .icon-moon {
-            position: absolute;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
+        .toggle-slider .icon-sun, .toggle-slider .icon-moon {
+            position: absolute; opacity: 0; transition: opacity 0.3s;
         }
         .toggle-slider .icon-sun { color: #FFD700; }
         .toggle-slider .icon-moon { color: var(--primary); }
         .toggle-switch:not(.dark) .icon-sun { opacity: 1; }
         .toggle-switch.dark .icon-moon { opacity: 1; }
         .toggle-switch.dark { background: var(--primary); }
-        .toggle-switch.dark .toggle-slider {
-            left: 31px;
-            background: var(--blue3);
-            color: var(--primary);
-        }
+        .toggle-switch.dark .toggle-slider { left: 31px; background: var(--blue3); }
         
         .download-section-btn {
-            background: var(--accent);
+            background: var(--blue2);
             color: var(--text-main);
             border: none;
             border-radius: 50%;
@@ -581,16 +666,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2em;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            font-size: 1.4em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
+            transition: all 0.2s;
+            margin-left: auto;
+            flex-shrink: 0;
         }
         .download-section-btn:hover {
-            background: var(--secondary);
+            background: var(--blue3);
             transform: scale(1.1);
         }
         
+        .screenshot-hide { display: none !important; }
+
         .copyright-btn {
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             color: white;
@@ -603,9 +692,8 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            margin: 10px 0 0;
+            margin-top: 15px;
         }
-
         .copyright-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -614,124 +702,489 @@
         .notification {
             position: fixed;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: -400px; /* Start off-screen */
             background: var(--section-bg);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
             max-width: 380px;
             z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s, visibility 0.5s, bottom 0.5s;
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .notification.show {
-            opacity: 1;
-            visibility: visible;
-            bottom: 30px;
+            left: 20px;
         }
 
-        .notification-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+        .notification-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .notification-title { font-weight: bold; color: var(--primary); font-size: 1.2em; display: flex; align-items: center; gap: 10px; }
+        .notification-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.5em; padding: 5px; transition: var(--transition); }
+        .notification-close:hover { color: var(--primary); transform: rotate(90deg); }
+        .notification-content { font-size: 0.95em; line-height: 1.7; }
+        .notification-content p { margin-bottom: 10px; }
+        .notification-content .disclaimer { font-style: italic; opacity: 0.8; font-size: 0.9em; margin-top: 10px; }
+        
+        @media (max-width: 480px) {
+            .notification {
+                max-width: calc(100% - 40px);
+                left: -100%;
+            }
+            .notification.show {
+                left: 20px;
+            }
         }
 
-        .notification-title {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 1.1em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .nav-dropdown-container { display: none; width: 100%; padding: 0 10px; }
+        .nav-dropdown {
+            width: 100%; padding: 12px 20px; border-radius: 25px; border: 1px solid var(--blue1);
+            background: var(--section-bg); color: var(--text-main); font-size: 1em; font-weight: 500;
+            cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat; background-position: right 15px center; background-size: 20px;
+            box-shadow: var(--shadow); transition: var(--transition);
         }
-
-        .notification-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 1.2em;
-        }
+        .nav-dropdown:hover { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); }
         
         .loading-screen {
-            position: fixed;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(224, 247, 250, 0.8); backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        [data-theme="dark"] .loading-screen { background: rgba(34, 47, 62, 0.8); }
+        .loading-screen.show { opacity: 1; visibility: visible; }
+        .loading-spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3); border-top: 8px solid var(--primary);
+            border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        .loading-text { font-size: 1.2em; font-weight: bold; color: var(--text-main); text-shadow: 0 0 8px rgba(0,0,0,0.4); }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .nav-buttons { display: none; }
+            .nav-dropdown-container { display: block; }
+            .navigation { padding: 10px; }
+            .intro-image-float { float: none; max-width: 90%; margin: 20px auto; }
+            .attacks-table { font-size: 0.9em; }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            .header, .section {
+                padding: 20px 15px;
+            }
+            .header h1 {
+                font-size: clamp(1.5em, 6vw, 2em);
+            }
+            .download-btn {
+                font-size: 1em;
+                padding: 12px 24px;
+            }
+        }
+
+        .intro-header {
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .definition-card {
+            background: var(--section-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .definition-card::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(224, 247, 250, 0.8);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        [data-theme="dark"] .loading-screen {
-            background: rgba(34, 47, 62, 0.8);
-        }
-        .loading-screen.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        .loading-spinner {
-            border: 8px solid rgba(0, 0, 0, 0.1);
-            border-top: 8px solid var(--primary);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        .loading-text {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--text-main);
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            background: linear-gradient(135deg, var(--primary) 0%, transparent 100%);
+            opacity: 0.05;
+            transition: opacity 0.3s ease;
         }
 
-        /* Nav Dropdown for Mobile */
-        .nav-dropdown-container {
-            display: none;
-            width: 100%;
-            padding: 0 10px;
+        .definition-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
-        .nav-dropdown {
-            width: 100%;
-            padding: 12px 20px;
-            border-radius: 25px;
-            border: 1px solid var(--blue1);
+
+        .definition-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .definition-icon {
+            font-size: 3em;
+            color: var(--primary);
+            flex-shrink: 0;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: transform 0.3s ease;
+        }
+
+        .definition-card:hover .definition-icon {
+            transform: scale(1.1);
+        }
+
+        .intro-content {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
             background: var(--section-bg);
-            color: var(--text-main);
-            font-size: 1em;
-            font-weight: 500;
-            cursor: pointer;
-            appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            border-color: var(--primary);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .feature-card i {
+            font-size: 2em;
+            color: var(--primary);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover i {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-card h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            transition: color 0.3s ease;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            transition: color 0.3s ease;
+        }
+
+        .important-notes {
+            margin-top: 40px;
+            background: var(--section-bg);
+            padding: 30px;
+            border-radius: 20px;
             box-shadow: var(--shadow);
         }
 
-        .screenshot-ready * {
-            transition: none !important;
+        .important-notes h4 {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-size: 1.4em;
         }
-        .screenshot-hide {
-            display: none !important;
+
+        .important-notes h4 i {
+            font-size: 1.2em;
+            color: var(--primary);
         }
-        
-        /* Responsive Styles */
+
+        .note-cards {
+            display: grid;
+            gap: 25px;
+        }
+
+        .note-card {
+            background: var(--section-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .note-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary) 0%, transparent 100%);
+            opacity: 0.05;
+            transition: opacity 0.3s ease;
+        }
+
+        .note-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .note-card:hover::after {
+            opacity: 0.1;
+        }
+
+        .note-card h5 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .note-card h5 i {
+            font-size: 1.2em;
+        }
+
+        .note-card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .intro-right {
+            position: relative;
+        }
+
+        .intro-right .image-placeholder {
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .intro-right .image-placeholder:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .intro-right .card-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .intro-right .image-placeholder:hover .card-image img {
+            transform: scale(1.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .intro-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .intro-right {
+                order: -1;
+            }
+
+            .intro-right .image-placeholder {
+                max-width: 800px;
+                margin: 0 auto 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .definition-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 25px;
+            }
+
+            .definition-icon {
+                margin-bottom: 15px;
+            }
+
+            .feature-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .important-notes {
+                padding: 20px;
+            }
+
+            .note-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .intro-header {
+                margin-bottom: 30px;
+            }
+
+            .definition-card {
+                padding: 20px;
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+
+            .important-notes {
+                padding: 15px;
+            }
+
+            .note-card {
+                padding: 15px;
+            }
+
+            .intro-right .image-placeholder {
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Animation for content appearance */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .definition-card,
+        .feature-card,
+        .note-card {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .feature-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .feature-card:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .note-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        /* Update Introduction Section Styles */
+        .intro-main-definition {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: var(--text-main);
+        }
+
+        #intro h4 {
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--blue1);
+            padding-bottom: 5px;
+        }
+
+        #intro ol, #intro ul {
+            list-style-position: outside;
+            margin-left: 25px;
+            margin-bottom: 20px;
+        }
+
+        #intro li {
+            font-size: 1.05em;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        #intro li strong {
+            color: var(--primary);
+        }
+
+        #intro ul ul {
+            margin-left: 20px;
+            margin-top: 8px;
+            list-style-type: disc;
+        }
+
+        #intro ul ul li {
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .intro-image-float {
+            float: right;
+            max-width: 50%;
+            margin: 0 0 20px 20px;
+        }
+
+        .intro-image-float.left {
+            float: left;
+            margin: 0 20px 20px 0;
+        }
+
+        .large-centered-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+        }
+
+        .card-image img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
         @media (max-width: 900px) {
             .intro-image-float {
                 max-width: 100%;
@@ -739,28 +1192,13 @@
                 margin: 20px auto;
             }
         }
-        
-        @media (max-width: 768px) {
-            .nav-buttons {
-                display: none;
-            }
-            .nav-dropdown-container {
-                display: block;
-            }
-            .navigation {
-                padding: 10px;
-            }
-            .attacks-table {
-                display: block;
-                overflow-x: auto;
-            }
-        }
+
     </style>
 </head>
 <body>
     <div id="loadingScreen" class="loading-screen">
         <div class="loading-spinner"></div>
-        <p class="loading-text">Preparing your content...</p>
+        <p class="loading-text">Preparing your download...</p>
     </div>
 
     <div class="container">
@@ -773,30 +1211,42 @@
                     </div>
                 </div>
             </div>
-            <h1><i class="fas fa-shield-alt"></i> Data Security Learning Module</h1>
+            <h1><i class="fas fa-signature"></i> Data Security Learning Module</h1>
             <p>Digital Signatures</p>
             <p>Created By Eng. Eslam Osama</p>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
             </div>
             <div class="download-buttons">
-                <button class="download-btn" onclick="downloadOriginalFile()">
+                <button class="download-btn" onclick="downloadOriginalSheet()">
                     <i class="fas fa-file-pdf"></i> Download Original Sheet
                 </button>
                 <button class="download-btn" onclick="downloadFullPageZip()">
-                    <i class="fas fa-file-archive"></i> Download All Sections (ZIP)
+                    <i class="fas fa-file-zipper"></i> Download Content (ZIP)
                 </button>
             </div>
         </div>
 
         <div class="navigation">
             <div class="nav-buttons">
-                <button class="nav-btn active" data-section="intro"><i class="fas fa-book-open"></i> Introduction</button>
-                <button class="nav-btn" data-section="attacks"><i class="fas fa-user-secret"></i> Attacks & Forgeries</button>
-                <button class="nav-btn" data-section="differences"><i class="fas fa-cogs"></i> Key Differences</button>
-                <button class="nav-btn" data-section="forgery-types"><i class="fas fa-mask"></i> Forgery Types</button>
-                <button class="nav-btn" data-section="rsa"><i class="fas fa-key"></i> RSA Scheme</button>
-                <button class="nav-btn" data-section="questions"><i class="fas fa-question-circle"></i> Review Questions</button>
+                <button class="nav-btn active" data-section="intro">
+                    <i class="fas fa-book-open"></i> Introduction
+                </button>
+                <button class="nav-btn" data-section="attacks">
+                    <i class="fas fa-shield-virus"></i> Attacks & Forgeries
+                </button>
+                <button class="nav-btn" data-section="differences">
+                    <i class="fas fa-exchange-alt"></i> Key Differences
+                </button>
+                <button class="nav-btn" data-section="forgery-types">
+                    <i class="fas fa-mask"></i> Forgery Types
+                </button>
+                <button class="nav-btn" data-section="rsa">
+                    <i class="fas fa-key"></i> RSA Scheme
+                </button>
+                <button class="nav-btn" data-section="questions">
+                    <i class="fas fa-question-circle"></i> Review Questions
+                </button>
             </div>
             <div class="nav-dropdown-container">
                 <select id="navDropdown" class="nav-dropdown">
@@ -812,14 +1262,14 @@
 
         <div id="intro" class="section active">
             <h2 class="section-title">
-                <span><i class="fas fa-book-open"></i> Introduction to Digital Signatures</span>
+                <span></i> Introduction to Digital Signatures</span>
                 <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
             </h2>
             <p class="intro-main-definition"><strong>Digital Signature</strong> is a cryptographic technique that verifies the <span class="highlight">authenticity</span>, <span class="highlight">integrity</span>, and <span class="highlight">origin</span> of a digital message or document. It is created using the sender's <span class="highlight">private key</span> and verified using their <span class="highlight">public key</span>.</p>
             
             <div class="image-placeholder intro-image-float">
                 <div class="card-image">
-                        <img src="media/image1.png" alt="Simplified Depiction of Digital Signature Process">
+                    <img src="media/image1.png" alt="Simplified Depiction of Digital Signature Process">
                 </div>
             </div>
 
@@ -842,199 +1292,193 @@
 
             <div class="image-placeholder large-centered-image">
                 <div class="card-image">
-                        <img src="media/image2.png" alt="Obtaining certificates from Certificate Authority">
+                    <img src="media/image2.png" alt="Obtaining certificates from Certificate Authority">
                 </div>
             </div>
             <div style="clear: both;"></div>
         </div>
 
         <div id="attacks" class="section">
-            <h2 class="section-title">
-                <span><i class="fas fa-user-secret"></i> Attacks and Forgeries</span>
+            <h2 class="section-title">Attacks and Forgeries
                 <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
             </h2>
-            <p><strong>Scenario:</strong> Assume <span class="highlight">Alice is a server that runs an automated document-signing service</span>. An attacker, Mallory, wants to forge Alice's signature.</p>
+            <p><strong>Scenario:</strong> Assume <span class="highlight">Alice is a server that runs an automated document-signing service</span>. An attacker (Mallory) wants to forge her signature.</p>
             
-            <div style="overflow-x:auto;">
-                <table class="attacks-table">
-                    <thead>
-                        <tr>
-                            <th>Attack Type</th>
-                            <th>What the Attacker Does</th>
-                            <th>What the Attacker Knows</th>
-                            <th>Threat Level</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Key-only Attack</strong></td>
-                            <td>Tries to forge a signature knowing only Alice's public key.</td>
-                            <td>Public Key only</td>
-                            <td><span class="threat-level threat-low">Low</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Known Message Attack</strong></td>
-                            <td>Uses a set of valid signed documents to help forge a new one.</td>
-                            <td>Public Key + Some (message, signature) pairs</td>
-                            <td><span class="threat-level threat-moderate">Moderate</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Generic Chosen Message</strong></td>
-                            <td>Gets signatures on a prepared list of messages to find a vulnerability.</td>
-                            <td>Prepared message list (before any interaction)</td>
-                            <td><span class="threat-level threat-moderate">Moderate</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Directed Chosen Message</strong></td>
-                            <td>Chooses messages to be signed after seeing Alice's public key to tailor the attack.</td>
-                            <td>Public Key + Chooses messages after seeing it</td>
-                            <td><span class="threat-level threat-high">High</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Adaptive Chosen Message</strong></td>
-                            <td>Sends messages sequentially, adjusting each new message based on the last signature received.</td>
-                            <td>Public Key + Can adapt messages mid-attack</td>
-                            <td><span class="threat-level threat-critical">Critical</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <table class="attacks-table">
+                <thead>
+                    <tr>
+                        <th>Attack Type</th>
+                        <th>What the Attacker Does</th>
+                        <th>Example with Alice</th>
+                        <th>Threat Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Key-only Attack</strong></td>
+                        <td>Tries to forge a signature knowing only Alice's <strong>public key</strong>.</td>
+                        <td>Mallory downloads Alice's public key and tries to create fake signed documents.</td>
+                        <td><span class="threat-level threat-low">Low</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Known Message Attack</strong></td>
+                        <td>Uses a set of <strong>valid signed documents</strong> to help forge a new one.</td>
+                        <td>Mallory collects Alice's old signed contracts and studies the signatures to learn patterns.</td>
+                        <td><span class="threat-level threat-moderate">Moderate</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Generic Chosen Message Attack</strong></td>
+                        <td>Gets signatures on a <strong>pre-made list of messages</strong> to break the system.</td>
+                        <td>Mallory sends 100 prepared contracts to Alice's API to be signed to find weaknesses.</td>
+                        <td><span class="threat-level threat-moderate">Moderate</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Directed Chosen Message Attack</strong></td>
+                        <td>Chooses messages to be signed <strong>after seeing the public key</strong> to target it.</td>
+                        <td>After getting Alice's key, Mallory designs 100 specific contracts tailored to exploit it.</td>
+                        <td><span class="threat-level threat-high">High</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adaptive Chosen Message Attack</strong></td>
+                        <td>Sends messages one by one, <strong>adapting each new message</strong> based on the last signature.</td>
+                        <td>Mallory sends 1 contract, sees signature, then sends an adjusted one to extract info and forge.</td>
+                        <td><span class="threat-level threat-critical">Critical</span></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <div id="differences" class="section">
-            <h2 class="section-title">
-                <span><i class="fas fa-cogs"></i> Key Differences Between Attack Types</span>
-                <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+            <h2 class="section-title">Key Differences Between Attack Types
+                 <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
             </h2>
             
             <div class="key-differences">
-                <h4>🔍 Generic Chosen vs. Known Message Attack</h4>
+                <h4>🔍 Generic Chosen Message vs. Known Message Attack</h4>
                 <ol>
-                    <li>In <strong>Generic</strong>, the attacker chooses the messages. In <strong>Known</strong>, the attacker only observes existing signed messages.</li>
+                    <li>In <strong>Generic</strong>, the attacker chooses the messages. In <strong>Known</strong>, the attacker only observes messages chosen by others.</li>
+                    <li>In <strong>Generic</strong>, the attacker interacts with the signer. In <strong>Known</strong>, it's passive observation.</li>
                 </ol>
             </div>
 
             <div class="key-differences">
                 <h4>🎯 Generic vs. Directed Chosen Message Attack</h4>
                 <ol>
-                    <li>In <strong>Generic</strong>, messages are chosen before knowing the public key. In <strong>Directed</strong>, they are chosen after, allowing for a more targeted attack.</li>
+                    <li>In <strong>Generic</strong>, messages are chosen *before* knowing the public key. In <strong>Directed</strong>, they're chosen *after* to specifically target the key.</li>
                 </ol>
             </div>
 
             <div class="key-differences">
                 <h4>🔄 Adaptive vs. Directed Chosen Message Attack</h4>
                 <ol>
-                    <li>In <strong>Directed</strong>, all messages are chosen at once. In <strong>Adaptive</strong>, the attacker dynamically adjusts the next message based on the signature from the previous one.</li>
+                    <li>In <strong>Directed</strong>, all messages are chosen at once. In <strong>Adaptive</strong>, the attacker learns from each signature and adjusts the next message, making it a dynamic, interactive attack.</li>
                 </ol>
             </div>
         </div>
 
         <div id="forgery-types" class="section">
-            <h2 class="section-title">
-                <span><i class="fas fa-mask"></i> Forgery Types</span>
-                <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+            <h2 class="section-title">Forgery Types
+                 <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
             </h2>
-            
-            <div style="overflow-x:auto;">
-                <table class="attacks-table">
-                    <thead>
-                        <tr>
-                            <th>Forgery Type</th>
-                            <th>What It Means</th>
-                            <th>Threat Level</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Total Break</strong></td>
-                            <td>Attacker recovers the signer's private key and can sign anything.</td>
-                            <td><span class="threat-level threat-critical">Critical</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Universal Forgery</strong></td>
-                            <td>Attacker can forge a signature for any document without the key.</td>
-                            <td><span class="threat-level threat-critical">Critical</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Selective Forgery</strong></td>
-                            <td>Attacker forges a signature for a specific, pre-chosen message.</td>
-                            <td><span class="threat-level threat-high">High</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Existential Forgery</strong></td>
-                            <td>Attacker forges a signature for at least one arbitrary message (not chosen by them).</td>
-                            <td><span class="threat-level threat-low">Low</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <table class="attacks-table">
+                <thead>
+                    <tr>
+                        <th>Forgery Type</th>
+                        <th>What It Means</th>
+                        <th>Threat Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Total Break</strong></td>
+                        <td>Attacker recovers the signer's private key. They can sign anything.</td>
+                        <td><span class="threat-level threat-critical">Catastrophic</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Universal Forgery</strong></td>
+                        <td>Attacker can forge a signature for any message without the key (finds an algorithm flaw).</td>
+                        <td><span class="threat-level threat-critical">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Selective Forgery</strong></td>
+                        <td>Attacker forges a signature for a *specific, pre-chosen* message.</td>
+                        <td><span class="threat-level threat-high">High</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Existential Forgery</strong></td>
+                        <td>Attacker forges a signature for at least one message they didn't get to choose (often a nonsensical one).</td>
+                        <td><span class="threat-level threat-low">Low (but still a break)</span></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        
+
         <div id="rsa" class="section">
-             <h2 class="section-title">
-                 <span><i class="fas fa-key"></i> RSA Signature Scheme</span>
+             <h2 class="section-title">RSA Signature Scheme
                  <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
             </h2>
             <div class="rsa-section">
                 <h3>Direct Digital Signature with RSA</h3>
-                <div class="rsa-image-container">
-                    <div class="rsa-image-wrapper">
-                        <img src="media/image3.png" alt="RSA Digital Signature Process Diagram">
-                        <p>This diagram shows the core process of signing a message with a private key and verifying it with the corresponding public key.</p>
-                    </div>
-                    <div class="rsa-image-wrapper">
-                        <img src="media/image4.png" alt="RSA Signature Implementation for Confidentiality">
-                        <p>For confidentiality, the signed message can be further encrypted, ensuring only the intended recipient can read it.</p>
-                    </div>
+                <div class="image-placeholder">
+                    <img src="media/image3.png" alt="RSA Digital Signature Process Diagram">
                 </div>
+                <p>The RSA algorithm can be used to create a direct digital signature, where the sender signs a message with their private key, and the receiver verifies it with the sender's public key.</p>
+                
+                <h3>Adding Confidentiality</h3>
+                <div class="image-placeholder">
+                    <img src="media/image4.png" alt="RSA Signature Implementation with Confidentiality">
+                </div>
+                 <p>For confidentiality, the entire signed message can be encrypted using a symmetric key shared between the sender and receiver. This protects both the message content and the signature from eavesdropping.</p>
             </div>
         </div>
 
         <div id="questions" class="section">
-            <h2 class="section-title">
-                <span><i class="fas fa-question-circle"></i> Review Questions</span>
-                <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+             <h2 class="section-title">Review Questions
+                 <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
             </h2>
-            <div class="review-questions-container">
-                <div class="question" onclick="toggleAnswer(this)">
-                    <div class="question-title">(1) What are two common disputes in message authentication? <i class="fas fa-chevron-down arrow-icon"></i></div>
+             <div class="review-questions-controls">
+                <button id="toggleAllAnswersBtn" class="toggle-all-btn">
+                    <i class="fas fa-eye"></i>
+                    <i class="fas fa-eye-slash"></i>
+                    <span class="btn-text">Show All Answers</span>
+                </button>
+            </div>
+            <div class="review-questions-list">
+                <div class="question" data-toggle="q1">
+                    <div class="question-title">(1) List two disputes that can arise in message authentication. <i class="fas fa-chevron-down arrow-icon"></i></div>
                     <div class="question-answer">
-                        A: The sender denies sending the message (non-repudiation), or the receiver claims the message was altered after signing (integrity).
+                        A sender might deny sending a message. A receiver might forge a message and claim it came from the sender.
                     </div>
                 </div>
-
-                <div class="question" onclick="toggleAnswer(this)">
-                    <div class="question-title">(2) What are the essential properties of a digital signature? <i class="fas fa-chevron-down arrow-icon"></i></div>
+                <div class="question" data-toggle="q2">
+                    <div class="question-title">(2) What are the properties a digital signature should have? <i class="fas fa-chevron-down arrow-icon"></i></div>
                     <div class="question-answer">
-                        A: Authenticity (verifies sender), Integrity (detects changes), and Non-repudiation (sender cannot deny).
+                        It must verify the author and the date/time of the signature. It must authenticate the contents at the time of signing. It must be verifiable by third parties to resolve disputes.
                     </div>
                 </div>
-
-                <div class="question" onclick="toggleAnswer(this)">
-                    <div class="question-title">(3) What requirements must a digital signature scheme satisfy? <i class="fas fa-chevron-down arrow-icon"></i></div>
+                <div class="question" data-toggle="q3">
+                    <div class="question-title">(3) What requirements should a digital signature scheme satisfy? <i class="fas fa-chevron-down arrow-icon"></i></div>
                     <div class="question-answer">
-                        A: It must be verifiable by third parties and computationally infeasible to forge a signature without the private key.
+                        The signature must be a bit pattern depending on the message being signed. It must use information unique to the sender. It must be easy to produce, easy to recognize/verify, and computationally infeasible to forge.
                     </div>
                 </div>
-
-                <div class="question" onclick="toggleAnswer(this)">
+                <div class="question" data-toggle="q4">
                     <div class="question-title">(4) What is the difference between direct and arbitrated digital signatures? <i class="fas fa-chevron-down arrow-icon"></i></div>
                     <div class="question-answer">
-                        A: <strong>Direct:</strong> The receiver verifies the signature directly with the sender's public key. <strong>Arbitrated:</strong> A trusted third party (arbitrator) is involved in verifying signatures to resolve disputes.
+                        <strong>Direct:</strong> Involves only the sender and receiver. The receiver verifies the signature with the sender's public key.
+                        <strong>Arbitrated:</strong> Involves a trusted third party (an arbiter) who participates in the signature process to validate it.
                     </div>
                 </div>
-                
-                <div class="question" onclick="toggleAnswer(this)">
+                <div class="question" data-toggle="q5">
                     <div class="question-title">(5) In what order should signing and encryption be applied? <i class="fas fa-chevron-down arrow-icon"></i></div>
                     <div class="question-answer">
-                        A: <strong>Sign first, then encrypt.</strong> This ensures the signature applies to the original message content and can be verified by anyone after decryption.
+                        Sign first, then encrypt. This ensures the signature is protected along with the message and allows the receiver to decrypt and then verify the signature on the original content.
                     </div>
                 </div>
-
-                <div class="question" onclick="toggleAnswer(this)">
+                <div class="question" data-toggle="q6">
                     <div class="question-title">(6) What are some threats to a direct digital signature scheme? <i class="fas fa-chevron-down arrow-icon"></i></div>
                     <div class="question-answer">
-                        A: Key-only attacks, known message attacks, and various chosen message attacks (generic, directed, adaptive).
+                        The main threat is forgery. An attacker might try to forge a signature using the public key (key-only attack) or by analyzing existing signed messages (known message attack). The sender could also later disown a signature by claiming their private key was lost or stolen.
                     </div>
                 </div>
             </div>
@@ -1042,10 +1486,12 @@
     </div>
 
     <footer>
-        <p>Data Security Learning Module - Digital Signatures | By Eng. Eslam Osama</p>
-        <button class="copyright-btn" onclick="showCopyrightNotice()">
-            <i class="fas fa-copyright"></i> All Rights Reserved
-        </button>
+        <div class="footer-content">
+            <p>Data Security Learning Module - Digital Signatures | Created for Educational Purposes | By Eng. Eslam Osama</p>
+            <button class="copyright-btn" onclick="showCopyrightNotice()">
+                <i class="fas fa-copyright"></i> All Rights Reserved
+            </button>
+        </div>
     </footer>
 
     <div class="notification" id="copyrightNotification">
@@ -1053,7 +1499,10 @@
             <div class="notification-title"><i class="fas fa-shield-alt"></i> Copyright Notice</div>
             <button class="notification-close" onclick="hideCopyrightNotice()"><i class="fas fa-times"></i></button>
         </div>
-        <p>This content is protected by copyright law. Unauthorized copying, distribution, or use is strictly prohibited.</p>
+        <div class="notification-content">
+            <p>This content is protected by copyright law. Unauthorized copying, distribution, or use of this material is strictly prohibited. The code, design, and content of this educational module are the exclusive property of the creator. Any reproduction or distribution without express written permission is a violation of copyright law.</p>
+            <p class="disclaimer">This module is provided for educational purposes only. The creator makes no warranties about the completeness, reliability, or accuracy of this information.</p>
+        </div>
     </div>
 
     <script>
@@ -1065,8 +1514,10 @@
             const navDropdown = document.getElementById('navDropdown');
             const sections = document.querySelectorAll('.section');
             const questions = document.querySelectorAll('.question');
+            const toggleAllBtn = document.getElementById('toggleAllAnswersBtn');
+            const toggleAllBtnText = toggleAllBtn.querySelector('.btn-text');
             
-            // --- Theme Management ---
+            // --- Theme Toggle ---
             function setTheme(mode) {
                 if (mode === 'dark') {
                     root.setAttribute('data-theme', 'dark');
@@ -1077,182 +1528,279 @@
                 }
                 localStorage.setItem('theme', mode);
             }
-
             themeSwitch.addEventListener('click', () => {
-                const isDark = root.getAttribute('data-theme') === 'dark';
+                const isDark = root.hasAttribute('data-theme');
                 setTheme(isDark ? 'light' : 'dark');
             });
-            
             const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             if (savedTheme) {
                 setTheme(savedTheme);
-            } else if (prefersDark) {
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 setTheme('dark');
             }
 
-            // --- Navigation ---
-            function showSection(sectionId) {
+            // --- Progress Bar & Nav on Scroll ---
+            function onScroll() {
+                // Progress Bar
+                const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0;
+                progressBar.style.width = progress + '%';
+
+                // Active Nav Button based on scroll position
+                let currentSection = '';
                 sections.forEach(section => {
-                    section.classList.remove('active');
+                    const sectionTop = section.offsetTop;
+                    if (window.scrollY >= sectionTop - 150) { // 150px offset for better UX
+                        currentSection = section.id;
+                    }
                 });
+
+                navButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.section === currentSection);
+                });
+                if(navDropdown.value !== currentSection && currentSection) {
+                    navDropdown.value = currentSection;
+                }
+            }
+
+            // --- Section Navigation ---
+            function showSection(sectionId) {
+                // 1. Update the active state of the main section content
+                sections.forEach(s => s.classList.remove('active'));
                 const activeSection = document.getElementById(sectionId);
                 if (activeSection) {
                     activeSection.classList.add('active');
                 }
-                
-                navButtons.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.section === sectionId);
-                });
-                if(navDropdown.value !== sectionId) {
-                    navDropdown.value = sectionId;
+
+                // 2. Scroll the relevant section into view
+                if (activeSection) {
+                    activeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
-                updateProgressBar();
             }
 
+            // --- Event Listeners for Navigation ---
             navButtons.forEach(btn => {
-                btn.addEventListener('click', () => showSection(btn.dataset.section));
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // When a button is clicked, we show the corresponding section.
+                    // The onScroll event will handle updating the active button state.
+                    showSection(btn.dataset.section);
+                });
             });
             
-            navDropdown.addEventListener('change', () => showSection(navDropdown.value));
+            navDropdown.addEventListener('change', () => {
+                 showSection(navDropdown.value);
+            });
 
-            // --- Progress Bar ---
-            function updateProgressBar() {
-                const activeSection = document.querySelector('.section.active');
-                if (!activeSection) return;
 
-                const sectionIndex = Array.from(sections).indexOf(activeSection);
-                const progress = (sectionIndex / (sections.length - 1)) * 100;
-                progressBar.style.width = progress + '%';
-            }
-            
-            // --- Accordion for Questions ---
-            window.toggleAnswer = (element) => {
-                element.classList.toggle('active');
-            }
+            // --- Accordion/Question Toggle ---
+            questions.forEach(question => {
+                question.addEventListener('click', () => {
+                    question.classList.toggle('open');
+                });
+            });
 
-            // --- Copyright Notice ---
-            window.showCopyrightNotice = () => {
-                const notice = document.getElementById('copyrightNotification');
-                notice.classList.add('show');
-                setTimeout(() => notice.classList.remove('show'), 5000);
-            };
-            window.hideCopyrightNotice = () => {
-                document.getElementById('copyrightNotification').classList.remove('show');
-            };
-            
-            // --- Loading Screen ---
-            const loadingScreen = document.getElementById('loadingScreen');
-            function showLoading(message) {
-                loadingScreen.querySelector('.loading-text').textContent = message;
-                loadingScreen.classList.add('show');
-            }
-            function hideLoading() {
-                loadingScreen.classList.remove('show');
-            }
-
-            // --- Download Functionality ---
-            window.downloadOriginalFile = () => {
-                window.open('assets/Digital_Sign_Sheet_9.pdf', '_blank');
-            };
-
-            async function prepareForCanvas(targetElement, show) {
-                const elementsToToggle = targetElement.querySelectorAll('.question');
-                const originalStates = new Map();
-
-                if (show) {
-                    document.body.classList.add('screenshot-mode');
-                    elementsToToggle.forEach(el => {
-                        originalStates.set(el, el.classList.contains('active'));
-                        el.classList.add('active');
-                    });
-                     // Hide all download buttons and nav during capture
-                    document.querySelectorAll('.download-section-btn, .download-btn, .navigation').forEach(b => b.classList.add('screenshot-hide'));
-
+            // --- Show/Hide All Answers ---
+             toggleAllBtn.addEventListener('click', () => {
+                const isAllShown = toggleAllBtn.classList.contains('all-shown');
+                if (isAllShown) {
+                    // Hide all
+                    questions.forEach(q => q.classList.remove('open'));
+                    toggleAllBtn.classList.remove('all-shown');
+                    toggleAllBtnText.textContent = 'Show All Answers';
                 } else {
-                    document.body.classList.remove('screenshot-mode');
-                    elementsToToggle.forEach(el => {
-                        if (originalStates.has(el) && !originalStates.get(el)) {
-                            el.classList.remove('active');
-                        }
-                    });
-                    document.querySelectorAll('.download-section-btn, .download-btn, .navigation').forEach(b => b.classList.remove('screenshot-hide'));
+                    // Show all
+                    questions.forEach(q => q.classList.add('open'));
+                    toggleAllBtn.classList.add('all-shown');
+                    toggleAllBtnText.textContent = 'Hide All Answers';
                 }
-                
-                await new Promise(r => setTimeout(r, 50)); // Allow DOM to update
-            }
+            });
 
-            window.downloadSectionPng = async (button) => {
-                const section = button.closest('.section');
-                showLoading('Generating Image...');
-                
-                await prepareForCanvas(section, true);
-                
-                try {
-                    const canvas = await html2canvas(section, { 
-                        scale: 2, 
-                        useCORS: true,
-                        backgroundColor: null 
-                    });
-                    const link = document.createElement('a');
-                    link.download = `${section.id}.png`;
-                    link.href = canvas.toDataURL('image/png', 1.0);
-                    link.click();
-                } catch (e) {
-                    console.error("Error generating PNG:", e);
-                    alert("Could not generate image.");
-                } finally {
-                    await prepareForCanvas(section, false);
-                    hideLoading();
-                }
-            }
 
-            window.downloadFullPageZip = async () => {
-                showLoading('Generating ZIP file...');
-                const zip = new JSZip();
-                const sectionIds = ['intro', 'attacks', 'differences', 'forgery-types', 'rsa', 'questions'];
+            // --- Initial State ---
+            // Show the intro section by default
+            const initialSection = document.getElementById('intro');
+            if(initialSection) initialSection.classList.add('active');
+            onScroll(); // Set initial active button state
 
-                for (const id of sectionIds) {
-                    const section = document.getElementById(id);
-                    if (!section) continue;
-
-                    const wasActive = section.classList.contains('active');
-                    if (!wasActive) section.classList.add('active');
-                    
-                    await prepareForCanvas(section, true);
-
-                    try {
-                        const canvas = await html2canvas(section, { 
-                            scale: 2, 
-                            useCORS: true,
-                            backgroundColor: null
-                        });
-                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                        zip.file(`${id}.png`, blob);
-                    } catch(e) {
-                        console.error(`Failed to capture section ${id}:`, e);
-                    } finally {
-                       await prepareForCanvas(section, false);
-                       if (!wasActive) section.classList.remove('active');
-                    }
-                }
-                
-                showSection(navDropdown.value); 
-                
-                try {
-                    const zipBlob = await zip.generateAsync({type:"blob"});
-                    saveAs(zipBlob, "Digital_Signatures_Module.zip");
-                } catch(e) {
-                    console.error("Error generating ZIP:", e);
-                    alert("Could not generate ZIP file.");
-                } finally {
-                    hideLoading();
-                }
-            };
-
-            // Initial setup
-            showSection('intro');
+            // --- Main Event Listeners ---
+            window.addEventListener('scroll', onScroll);
         });
+
+        // --- Copyright Notice ---
+        function showCopyrightNotice() {
+            const notification = document.getElementById('copyrightNotification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                if (notification.classList.contains('show')) {
+                    hideCopyrightNotice();
+                }
+            }, 5000); // Auto-hide after 5 seconds
+        }
+        function hideCopyrightNotice() {
+            document.getElementById('copyrightNotification').classList.remove('show');
+        }
+        document.querySelector('.copyright-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            showCopyrightNotice();
+        });
+        document.querySelector('.notification-close').addEventListener('click', hideCopyrightNotice);
+        setTimeout(showCopyrightNotice, 1500);
+
+        // --- Download Functionality ---
+        const loadingScreen = document.getElementById('loadingScreen');
+        function showLoading(message) {
+            loadingScreen.querySelector('.loading-text').textContent = message;
+            loadingScreen.classList.add('show');
+        }
+        function hideLoading() {
+            loadingScreen.classList.remove('show');
+        }
+        
+        function downloadOriginalSheet() {
+             window.open('assets/Digital_Sign_Sheet_9.pdf', '_blank');
+        }
+
+        async function prepareForCanvas(section) {
+            // Hide all download buttons and navigation
+            document.querySelectorAll('.download-section-btn, .download-btn, .navigation').forEach(el => el.classList.add('screenshot-hide'));
+            
+            // Open all questions within the target section
+            section.querySelectorAll('.question').forEach(q => q.classList.add('open'));
+            
+            // Wait for animations to complete and ensure content is fully expanded
+            await new Promise(r => setTimeout(r, 1200)); // Increased timeout for full expansion
+            
+            // Force multiple reflows to ensure all content is rendered
+            section.offsetHeight;
+            section.offsetHeight;
+            
+            // Additional check for question answers
+            const questions = section.querySelectorAll('.question');
+            for (const question of questions) {
+                const answer = question.querySelector('.question-answer');
+                if (answer) {
+                    // Force the answer to be fully expanded
+                    answer.style.maxHeight = 'none';
+                    answer.style.opacity = '1';
+                    answer.style.visibility = 'visible';
+                }
+            }
+            
+            // Final wait to ensure all styles are applied
+            await new Promise(r => setTimeout(r, 300));
+        }
+        
+        function cleanupAfterCanvas() {
+            // Restore original styles for all questions
+            document.querySelectorAll('.question').forEach(q => {
+                const answer = q.querySelector('.question-answer');
+                if (answer) {
+                    answer.style.maxHeight = '';
+                    answer.style.opacity = '';
+                    answer.style.visibility = '';
+                }
+            });
+            
+            document.querySelectorAll('.screenshot-hide').forEach(el => el.classList.remove('screenshot-hide'));
+            document.querySelectorAll('.question').forEach(q => q.classList.remove('open'));
+        }
+
+        async function downloadSectionPng(buttonEl) {
+            const section = buttonEl.closest('.section');
+            if (!section) return;
+
+            showLoading('Preparing section image...');
+            
+            try {
+                await prepareForCanvas(section);
+                
+                const canvas = await html2canvas(section, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: getComputedStyle(document.body).getPropertyValue('background-color'),
+                    logging: false,
+                    onclone: (clonedDoc) => {
+                        // Ensure all answers are visible in the cloned document
+                        const clonedSection = clonedDoc.querySelector(`#${section.id}`);
+                        if (clonedSection) {
+                            clonedSection.querySelectorAll('.question').forEach(q => {
+                                q.classList.add('open');
+                                const answer = q.querySelector('.question-answer');
+                                if (answer) {
+                                    answer.style.maxHeight = 'none';
+                                    answer.style.opacity = '1';
+                                    answer.style.visibility = 'visible';
+                                }
+                            });
+                        }
+                    }
+                });
+
+                const link = document.createElement('a');
+                link.download = `${section.id}-section.jpeg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+            } catch (err) {
+                console.error("Failed to generate section image:", err);
+                alert("Sorry, there was an error creating the image.");
+            } finally {
+                cleanupAfterCanvas();
+                hideLoading();
+            }
+        }
+        
+        async function downloadFullPageZip() {
+            showLoading('Creating ZIP file...');
+            
+            const zip = new JSZip();
+            const sections = document.querySelectorAll('.section');
+
+            for (const section of sections) {
+                try {
+                    const originalDisplay = section.style.display;
+                    const wasActive = section.classList.contains('active');
+                    section.style.display = 'block'; // Make sure it's rendered
+                    section.classList.add('active');
+
+                    await prepareForCanvas(section);
+                    
+                    const canvas = await html2canvas(section, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: getComputedStyle(document.body).getPropertyValue('background-color'),
+                        logging: false,
+                    });
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+                    zip.file(`${section.id}.jpeg`, blob);
+
+                    section.style.display = originalDisplay;
+                    if (!wasActive) {
+                        section.classList.remove('active');
+                    }
+
+                } catch (err) {
+                    console.error(`Failed to capture section ${section.id}:`, err);
+                }
+            }
+            
+            try {
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+                saveAs(zipBlob, 'Digital-Signature-Module.zip');
+            } catch (err) {
+                console.error("Failed to generate ZIP:", err);
+                alert("Sorry, there was an error creating the ZIP file.");
+            } finally {
+                cleanupAfterCanvas();
+                const activeNav = document.querySelector('.nav-btn.active') || document.querySelector('.nav-btn');
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                if(activeNav) {
+                    const activeSection = document.getElementById(activeNav.dataset.section);
+                    if(activeSection) activeSection.classList.add('active');
+                }
+                hideLoading();
+            }
+        }
     </script>
 </body>
 </html>
