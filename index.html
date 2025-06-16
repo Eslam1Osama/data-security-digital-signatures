@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Signature - Interactive Learning</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary: #00ACC1; /* main blue */
@@ -57,7 +60,16 @@
             color: var(--text-main);
             background: var(--bg-gradient);
             min-height: 100vh;
+            font-size: 16px; /* Base font size */
         }
+        
+        body.screenshot-mode {
+            background: white !important;
+        }
+        [data-theme="dark"] body.screenshot-mode {
+            background: #001f26 !important;
+        }
+
 
         .container {
             max-width: 1200px;
@@ -76,6 +88,7 @@
             box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
+            padding-top: 60px;
         }
 
         .header::before {
@@ -90,13 +103,13 @@
         }
 
         .header h1 {
-            font-size: 2.5em;
+            font-size: clamp(1.8em, 5vw, 2.5em);
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .header p {
-            font-size: 1.2em;
+            font-size: clamp(1em, 2.5vw, 1.2em);
             opacity: 0.9;
             max-width: 700px;
             margin: 0 auto;
@@ -153,7 +166,7 @@
 
         .nav-btn {
             background: var(--nav-btn-bg);
-            color: var(--text-main);
+            color: white;
             border: none;
             padding: 12px 20px;
             border-radius: 25px;
@@ -170,13 +183,7 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
         }
-
-        @media (max-width: 768px) {
-            .nav-buttons {
-                flex-direction: column;
-            }
-        }
-
+        
         .section {
             background: var(--section-bg);
             backdrop-filter: blur(10px);
@@ -184,66 +191,71 @@
             padding: 30px;
             margin-bottom: 25px;
             box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-            position: relative;
+            display: none; /* Hidden by default, shown by JS */
+            animation: fadeIn 0.5s ease-in-out;
         }
 
-        .section:hover {
-            transform: translateY(-2px);
+        .screenshot-mode .section {
+             background: var(--section-bg) !important;
+             backdrop-filter: none !important;
+        }
+        [data-theme="dark"] .screenshot-mode .section {
+             background: var(--blue1) !important;
+        }
+
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .section-title {
             color: var(--primary);
-            font-size: 1.8em;
+            font-size: clamp(1.4em, 4vw, 1.8em);
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 3px solid var(--secondary);
             display: flex;
             align-items: center;
+            justify-content: space-between;
         }
-
-        .section-title::before {
-            content: "🔐";
-            margin-right: 10px;
-            font-size: 1.2em;
-        }
-
+        
         .image-placeholder {
             width: 100%;
             max-width: 800px;
             min-height: unset;
-            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
-            border: 2px dashed #ccc;
+            background: none;
+            border: none;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 20px auto;
-            color: #666;
-            font-size: 1.1em;
+            padding: 0;
         }
 
         .intro-image-float {
             float: right;
-            max-width: 60%;
+            max-width: 50%;
             margin: 0 0 20px 20px;
-            min-height: unset;
-            border: none;
-            background: none;
         }
 
         .intro-image-float.left {
             float: left;
             margin: 0 20px 20px 0;
         }
-
-        .intro-image-float .card-image {
-            padding: 0;
-        }
-
-        .image-placeholder i {
-            font-size: 3em;
-            margin-bottom: 15px;
+        
+        .card-image img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .intro-main-definition {
@@ -273,13 +285,12 @@
             font-size: 1.05em;
             line-height: 1.7;
             margin-bottom: 12px;
-            color: var(--text-main);
         }
 
         #intro li strong {
             color: var(--primary);
         }
-
+        
         #intro ul ul {
             margin-left: 20px;
             margin-top: 8px;
@@ -293,27 +304,11 @@
             color: var(--text-secondary);
         }
 
-        .card-image {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card-image img {
-            max-width: 100%;
-            max-height: none;
-            height: auto;
-            object-fit: contain;
-            display: block;
-        }
-
         .attacks-table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-            background: var(--section-bg);
+            background: var(--blue3);
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -321,7 +316,7 @@
 
         .attacks-table th {
             background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: var(--section-bg);
+            color: white;
             padding: 15px;
             text-align: left;
             font-weight: bold;
@@ -330,10 +325,16 @@
         .attacks-table td {
             padding: 15px;
             border-bottom: 1px solid var(--blue1);
-            color: var(--text-main);
+            color: var(--text-secondary);
+        }
+        [data-theme="dark"] .attacks-table td {
+             color: var(--text-main);
         }
 
         .attacks-table tr:hover {
+            background-color: var(--blue2);
+        }
+        [data-theme="dark"] .attacks-table tr:hover {
             background-color: var(--blue1);
         }
 
@@ -342,20 +343,21 @@
             border-radius: 15px;
             font-size: 0.9em;
             font-weight: bold;
+            color: var(--text-main);
         }
 
-        .threat-low { background: var(--blue1); color: var(--primary); }
-        .threat-moderate { background: var(--accent); color: var(--primary); }
-        .threat-high { background: var(--secondary); color: var(--text-main); }
-        .threat-critical { background: var(--primary); color: var(--section-bg); }
+        .threat-low { background: #c8e6c9; color: #2e7d32; }
+        .threat-moderate { background: #fff9c4; color: #fbc02d; }
+        .threat-high { background: #ffccbc; color: #d84315; }
+        .threat-critical { background: #ffcdd2; color: #c62828; }
 
         .key-differences {
-            background: var(--blue1);
+            background: var(--blue2);
             border-left: 4px solid var(--primary);
             padding: 20px;
             margin: 20px 0;
             border-radius: 0 10px 10px 0;
-            color: var(--text-main);
+            color: var(--text-secondary);
         }
 
         .key-differences h4 {
@@ -373,27 +375,16 @@
             line-height: 1.6;
         }
 
-        .review-questions {
-            background: var(--blue1);
-            padding: 25px;
-            border-radius: 15px;
-            margin-top: 20px;
-            color: var(--text-main);
+        .review-questions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
-
-        .review-questions h3 {
-            color: var(--primary);
-            margin-bottom: 20px;
-            font-size: 1.7em;
-            font-weight: bold;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.10);
-        }
-
+        
         .question {
-            background: var(--section-bg);
+            background: var(--blue2);
             color: var(--text-main);
             padding: 20px;
-            margin: 15px 0;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             cursor: pointer;
@@ -401,7 +392,7 @@
         }
 
         .question:hover {
-            transform: translateX(5px);
+            transform: translateY(-5px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
 
@@ -417,36 +408,27 @@
         }
 
         .question-title .arrow-icon {
-            font-size: 0.8em;
             transition: transform 0.3s ease;
-            opacity: 0;
-        }
-
-        .question:hover .arrow-icon {
-            opacity: 1;
         }
 
         .question.active .arrow-icon {
             transform: rotate(180deg);
-            opacity: 1;
         }
 
         .question-answer {
             color: var(--text-secondary);
-            display: none;
-            padding-top: 10px;
-            border-top: 1px solid var(--blue2);
-            margin-top: 10px;
+            max-height: 0;
+            overflow: hidden;
+            padding-top: 0;
+            margin-top: 0;
+            border-top: 1px solid var(--blue1);
+            transition: max-height 0.4s ease-out, padding-top 0.4s ease-out, margin-top 0.4s ease-out;
         }
 
         .question.active .question-answer {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            max-height: 500px;
+            padding-top: 15px;
+            margin-top: 15px;
         }
 
         .highlight {
@@ -458,217 +440,56 @@
         }
 
         .rsa-section {
-            text-align: center;
-            padding: 40px 30px;
+            padding: 20px;
             background: var(--blue1);
-            color: var(--text-main);
-            border-radius: 20px;
-            margin: 30px 0;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            position: relative;
-            overflow: hidden;
+            border-radius: 15px;
         }
 
         .rsa-section h3 {
-            font-size: 2.2em;
-            margin-bottom: 25px;
-            color: var(--primary);
-            font-weight: bold;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.10);
-        }
-
-        [data-theme="dark"] .rsa-section h3 {
-            text-shadow: 0 2px 12px rgba(0,0,0,0.45);
-        }
-
-        .rsa-description-text {
             text-align: center;
-            color: var(--text-main);
-            font-size: 1.1em;
-            line-height: 1.7;
-            max-width: 700px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-
-        .rsa-confidentiality-intro {
-            font-size: 1.3em;
-            color: var(--secondary);
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.08);
-        }
-
-        [data-theme="dark"] .rsa-confidentiality-intro {
-            color: var(--accent);
-            text-shadow: 0 2px 8px rgba(0,0,0,0.35);
-        }
-
-        .rsa-image-caption {
-            font-size: 1.05em;
+            font-size: clamp(1.6em, 4vw, 2em);
             color: var(--primary);
-            font-weight: bold;
-            margin-top: 10px;
-            margin-bottom: 5px;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
         }
 
-        [data-theme="dark"] .rsa-image-caption {
-            color: var(--accent);
-            text-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        .rsa-image-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            align-items: center;
+            justify-content: center;
         }
 
-        .rsa-image-description {
+        .rsa-image-wrapper {
+            width: 100%;
+            max-width: 900px; /* Adjust max-width as needed */
+            background: var(--section-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .rsa-image-wrapper img {
+             width: 100%;
+             height: auto;
+             max-height: 450px;
+             object-fit: contain;
+        }
+
+        .rsa-image-wrapper p {
+            margin-top: 15px;
             font-size: 1em;
-            line-height: 1.6;
-            color: var(--text-main);
-            max-width: 650px;
-            margin: 15px auto;
+            color: var(--text-secondary);
+            font-style: italic;
         }
-
-        .rsa-section .image-placeholder {
-            background: none;
-            border: none;
-            max-width: 90%;
-            margin: 30px auto;
-        }
-
-        @media (max-width: 1200px) {
-            .container {
-                max-width: 100%;
-                padding: 10px;
-            }
-        }
-        @media (max-width: 900px) {
-            .header {
-                padding: 30px 10px;
-            }
-            .section, .rsa-section, .review-questions {
-                padding: 18px 8px;
-            }
-            .section-title {
-                font-size: 1.3em;
-            }
-            .rsa-section h3, .review-questions h3 {
-                font-size: 1.2em;
-            }
-        }
-        @media (max-width: 768px) {
-            .container {
-                padding: 4px;
-            }
-            .header {
-                padding: 18px 4px;
-            }
-            .section, .rsa-section, .review-questions {
-                padding: 10px 2vw;
-                margin-bottom: 16px;
-            }
-            .section-title {
-                font-size: 1.1em;
-            }
-            .rsa-section h3, .review-questions h3 {
-                font-size: 1em;
-            }
-            .download-btn, .nav-btn {
-                font-size: 0.95em;
-                padding: 10px 12px;
-            }
-            .theme-toggle {
-                top: 10px;
-                right: 10px;
-            }
-            .toggle-switch {
-                width: 40px;
-                height: 22px;
-            }
-            .toggle-slider {
-                width: 16px;
-                height: 16px;
-            }
-            .toggle-switch.dark .toggle-slider {
-                left: 18px;
-            }
-            .image-placeholder, .large-centered-image, .intro-bottom-image {
-                max-width: 98vw;
-                min-width: 0;
-            }
-            .intro-image-float, .intro-image-float.left {
-                float: none;
-                display: block;
-                margin: 10px auto;
-                max-width: 95vw;
-            }
-        }
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 1.1em;
-            }
-            .header p {
-                font-size: 0.95em;
-            }
-            .section-title {
-                font-size: 1em;
-            }
-            .rsa-section h3, .review-questions h3 {
-                font-size: 0.95em;
-            }
-            .attacks-table, .attacks-table th, .attacks-table td {
-                font-size: 0.85em;
-            }
-            .download-btn, .nav-btn {
-                font-size: 0.9em;
-                padding: 8px 8px;
-            }
-        }
-        @media (max-width: 500px) {
-            .header h1 {
-                font-size: 0.95em;
-            }
-            .header p {
-                font-size: 0.85em;
-            }
-            .section-title {
-                font-size: 0.95em;
-            }
-            .rsa-section h3, .review-questions h3 {
-                font-size: 0.85em;
-            }
-        }
-        /* Responsive tables: horizontal scroll on small screens */
-        .attacks-table, .attacks-table thead, .attacks-table tbody, .attacks-table tr, .attacks-table th, .attacks-table td {
-            box-sizing: border-box;
-        }
-        .attacks-table {
-            display: block;
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .attacks-table thead, .attacks-table tbody {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-        }
-        .attacks-table tr {
-            display: table-row;
-        }
-        .attacks-table th, .attacks-table td {
-            word-break: break-word;
-        }
-        /* Make images fluid */
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
+        
         .progress-bar {
             width: 100%;
             height: 6px;
             background: var(--blue1);
             border-radius: 3px;
-            margin: 20px 0;
+            margin: 20px auto 0 auto;
             overflow: hidden;
         }
 
@@ -681,39 +502,19 @@
 
         footer {
             text-align: center;
-            padding: 10px;
+            padding: 20px;
             margin-top: 20px;
-            color: var(--text-secondary);
+            color: white;
             font-size: 0.9em;
             background: var(--footer-bg);
+            border-radius: 15px 15px 0 0;
         }
-
-        footer p {
-            margin: 0;
-            color: var(--text-main);
-        }
-
+        
         .large-centered-image {
             display: flex;
             justify-content: center;
             align-items: center;
             margin: 20px auto;
-        }
-
-        .intro-bottom-image {
-            float: none;
-            max-width: 700px;
-            margin: 30px auto;
-            display: block;
-            border: none;
-            background: none;
-        }
-
-        .intro-left ul ul li {
-            font-size: 0.95em;
-            line-height: 1.6;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
         }
 
         /* Theme Toggle Switch */
@@ -722,8 +523,6 @@
             top: 20px;
             right: 30px;
             z-index: 10;
-            display: flex;
-            align-items: center;
         }
         .toggle-switch {
             width: 56px;
@@ -734,7 +533,6 @@
             cursor: pointer;
             transition: background 0.3s;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-left: 10px;
         }
         .toggle-slider {
             position: absolute;
@@ -756,53 +554,30 @@
         .toggle-slider .icon-sun,
         .toggle-slider .icon-moon {
             position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             transition: opacity 0.3s;
         }
-        .toggle-slider .icon-sun {
-            color: #FFD700;
-        }
-        .toggle-slider .icon-moon {
-            color: var(--primary);
-        }
-        .toggle-switch:not(.dark) .icon-sun {
-            opacity: 1;
-        }
-        .toggle-switch.dark .icon-moon {
-            opacity: 1;
-        }
-        .toggle-switch.dark {
-            background: var(--primary);
-        }
+        .toggle-slider .icon-sun { color: #FFD700; }
+        .toggle-slider .icon-moon { color: var(--primary); }
+        .toggle-switch:not(.dark) .icon-sun { opacity: 1; }
+        .toggle-switch.dark .icon-moon { opacity: 1; }
+        .toggle-switch.dark { background: var(--primary); }
         .toggle-switch.dark .toggle-slider {
             left: 31px;
             background: var(--blue3);
             color: var(--primary);
         }
-        .toggle-icon {
-            font-size: 1.2em;
-            color: var(--primary);
-        }
+        
         .download-section-btn {
-            position: absolute;
-            top: 12px;
-            right: 18px;
-            z-index: 20;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            color: white;
+            background: var(--accent);
+            color: var(--text-main);
             border: none;
             border-radius: 50%;
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -812,78 +587,10 @@
             transition: background 0.2s, transform 0.2s;
         }
         .download-section-btn:hover {
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            transform: scale(1.08);
+            background: var(--secondary);
+            transform: scale(1.1);
         }
-        .download-section-btn.screenshot-hide,
-        .download-btn.screenshot-hide {
-            display: none !important;
-        }
-        .screenshot-mode.section,
-        .screenshot-mode {
-            width: 100vw !important;
-            max-width: 100vw !important;
-            left: 0 !important;
-            position: fixed !important;
-            top: 0 !important;
-            z-index: 9999 !important;
-        }
-        .screenshot-mode-body {
-            width: 100vw !important;
-            max-width: 100vw !important;
-            overflow: visible !important;
-        }
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .copyright-notice {
-            margin-top: 8px;
-            font-size: 0.85em;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-
-        .copyright-notice p {
-            margin: 5px 0;
-        }
-
-        .terms {
-            font-size: 0.85em;
-            max-width: 800px;
-            margin: 10px auto;
-            padding: 10px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .disclaimer {
-            font-size: 0.8em;
-            font-style: italic;
-            opacity: 0.8;
-        }
-
-        [data-theme="dark"] .terms {
-            border-color: rgba(255,255,255,0.1);
-        }
-
-        @media (max-width: 768px) {
-            .copyright-notice {
-                font-size: 0.8em;
-            }
-            .terms {
-                font-size: 0.75em;
-                padding: 8px;
-            }
-            .disclaimer {
-                font-size: 0.7em;
-            }
-        }
-
-        /* Add these styles to your existing CSS */
+        
         .copyright-btn {
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             color: white;
@@ -896,7 +603,7 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            margin: 3px 0;
+            margin: 10px 0 0;
         }
 
         .copyright-btn:hover {
@@ -904,25 +611,26 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .copyright-btn i {
-            font-size: 1.1em;
-        }
-
         .notification {
             position: fixed;
             bottom: 20px;
-            left: -400px; /* Start off-screen */
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--section-bg);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
             max-width: 380px;
             z-index: 1000;
-            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s, bottom 0.5s;
         }
 
         .notification.show {
-            left: 20px;
+            opacity: 1;
+            visibility: visible;
+            bottom: 30px;
         }
 
         .notification-header {
@@ -947,41 +655,114 @@
             color: var(--text-secondary);
             cursor: pointer;
             font-size: 1.2em;
-            padding: 5px;
-            transition: var(--transition);
         }
-
-        .notification-close:hover {
-            color: var(--primary);
-            transform: rotate(90deg);
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(224, 247, 250, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-
-        .notification-content {
+        [data-theme="dark"] .loading-screen {
+            background: rgba(34, 47, 62, 0.8);
+        }
+        .loading-screen.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .loading-spinner {
+            border: 8px solid rgba(0, 0, 0, 0.1);
+            border-top: 8px solid var(--primary);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        .loading-text {
+            font-size: 1.2em;
+            font-weight: bold;
             color: var(--text-main);
-            font-size: 0.9em;
-            line-height: 1.6;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .notification-content p {
-            margin: 8px 0;
+        /* Nav Dropdown for Mobile */
+        .nav-dropdown-container {
+            display: none;
+            width: 100%;
+            padding: 0 10px;
+        }
+        .nav-dropdown {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 1px solid var(--blue1);
+            background: var(--section-bg);
+            color: var(--text-main);
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+            box-shadow: var(--shadow);
         }
 
-        .notification-content .disclaimer {
-            font-style: italic;
-            opacity: 0.8;
-            font-size: 0.9em;
-            margin-top: 10px;
+        .screenshot-ready * {
+            transition: none !important;
         }
-
-        @media (max-width: 480px) {
-            .notification {
-                max-width: calc(100% - 40px);
-                left: -100%;
+        .screenshot-hide {
+            display: none !important;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 900px) {
+            .intro-image-float {
+                max-width: 100%;
+                float: none;
+                margin: 20px auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-buttons {
+                display: none;
+            }
+            .nav-dropdown-container {
+                display: block;
+            }
+            .navigation {
+                padding: 10px;
+            }
+            .attacks-table {
+                display: block;
+                overflow-x: auto;
             }
         }
     </style>
 </head>
 <body>
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Preparing your content...</p>
+    </div>
+
     <div class="container">
         <div class="header">
             <div class="theme-toggle">
@@ -999,669 +780,479 @@
                 <div class="progress-fill" id="progressBar"></div>
             </div>
             <div class="download-buttons">
-                <button class="download-btn" onclick="downloadWordFile()">
+                <button class="download-btn" onclick="downloadOriginalFile()">
                     <i class="fas fa-file-pdf"></i> Download Original Sheet
                 </button>
-                <button class="download-btn" onclick="downloadFullPagePng()">
-                    <i class="fas fa-file-image"></i> Download Full Page (PNG)
+                <button class="download-btn" onclick="downloadFullPageZip()">
+                    <i class="fas fa-file-archive"></i> Download All Sections (ZIP)
                 </button>
             </div>
         </div>
 
         <div class="navigation">
             <div class="nav-buttons">
-                <button class="nav-btn" data-section="intro" onclick="scrollToSection('intro')">
-                    <i class="fas fa-book-open"></i> Introduction
-                </button>
-                <button class="nav-btn" data-section="attacks" onclick="scrollToSection('attacks')">
-                    <i class="fas fa-shield-alt"></i> Attacks & Forgeries
-                </button>
-                <button class="nav-btn" data-section="differences" onclick="scrollToSection('differences')">
-                    <i class="fas fa-cogs"></i> Key Differences
-                </button>
-                <button class="nav-btn" data-section="forgery-types" onclick="scrollToSection('forgery-types')">
-                    <i class="fas fa-mask"></i> Forgery Types
-                </button>
-                <button class="nav-btn" data-section="rsa" onclick="scrollToSection('rsa')">
-                    <i class="fas fa-key"></i> RSA Scheme
-                </button>
-                <button class="nav-btn" data-section="questions" onclick="scrollToSection('questions')">
-                    <i class="fas fa-question-circle"></i> Review Questions
-                </button>
+                <button class="nav-btn active" data-section="intro"><i class="fas fa-book-open"></i> Introduction</button>
+                <button class="nav-btn" data-section="attacks"><i class="fas fa-user-secret"></i> Attacks & Forgeries</button>
+                <button class="nav-btn" data-section="differences"><i class="fas fa-cogs"></i> Key Differences</button>
+                <button class="nav-btn" data-section="forgery-types"><i class="fas fa-mask"></i> Forgery Types</button>
+                <button class="nav-btn" data-section="rsa"><i class="fas fa-key"></i> RSA Scheme</button>
+                <button class="nav-btn" data-section="questions"><i class="fas fa-question-circle"></i> Review Questions</button>
+            </div>
+            <div class="nav-dropdown-container">
+                <select id="navDropdown" class="nav-dropdown">
+                    <option value="intro">Introduction</option>
+                    <option value="attacks">Attacks & Forgeries</option>
+                    <option value="differences">Key Differences</option>
+                    <option value="forgery-types">Forgery Types</option>
+                    <option value="rsa">RSA Scheme</option>
+                    <option value="questions">Review Questions</option>
+                </select>
             </div>
         </div>
 
-        <div id="intro" class="section">
-            <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
-            <h2 class="section-title">Introduction to Digital Signatures</h2>
+        <div id="intro" class="section active">
+            <h2 class="section-title">
+                <span><i class="fas fa-book-open"></i> Introduction to Digital Signatures</span>
+                <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+            </h2>
             <p class="intro-main-definition"><strong>Digital Signature</strong> is a cryptographic technique that verifies the <span class="highlight">authenticity</span>, <span class="highlight">integrity</span>, and <span class="highlight">origin</span> of a digital message or document. It is created using the sender's <span class="highlight">private key</span> and verified using their <span class="highlight">public key</span>.</p>
             
+            <div class="image-placeholder intro-image-float">
+                <div class="card-image">
+                       <img src="media/image1.png" alt="Simplified Depiction of Digital Signature Process">
+                </div>
+            </div>
+
             <h4>Key Features of Digital Signatures</h4>
             <ol>
-                <li><strong>Authenticity</strong><br>Confirms the message is from the claimed sender (verified via public key).</li>
-                <li><strong>Integrity</strong><br>Ensures the message hasn't been altered; any change breaks the signature.</li>
-                <li><strong>Non-repudiation</strong><br>The sender cannot deny sending the message after signing it.</li>
+                <li><strong>Authenticity:</strong> Confirms the message is from the claimed sender (verified via public key).</li>
+                <li><strong>Integrity:</strong> Ensures the message hasn't been altered; any change breaks the signature.</li>
+                <li><strong>Non-repudiation:</strong> The sender cannot deny sending the message after signing it.</li>
             </ol>
-
-            <div class="image-placeholder intro-image-float right">
-                <div class="card-image">
-                       <img src="media/image1.png" alt="Simplified Depiction of Essential Elements of Digital Signature Process">
-                    </div>
-            </div>
 
             <h4>Important Notes:</h4>
             <ul>
                 <li><strong>Third-Party Authentication in Digital Signatures</strong><br>
-                    A digital signature must be publicly verifiable, meaning trusted third party can check its validity — not just the sender and receiver. This is often done using a Certificate Authority (CA), which is a trusted third party.
+                    A digital signature must be publicly verifiable, meaning a trusted third party can check its validity — not just the sender and receiver. This is often done using a Certificate Authority (CA).
                 </li>
-            </ul>
-            
-            <ul>
                 <li><strong>Signatures Are Not Unconditionally Secure</strong><br>
-                    Digital signatures are not 100% secure in all conditions. Here's why:
-                    <ul>
-                        <li>An attacker might eventually:</li>
-                        <li>Break the math behind the algorithm.</li>
-                        <li>Exploit weak random number generators.</li>
-                        <li>Gain computing power (quantum computing in the future).</li>
-                        <li>Try forgery attacks using public info or signed messages.</li>
-                    </ul>
-                    That's where expiration Dates comes into picture as it reduces risk over time, ensures systems regularly refresh and upgrade cryptographic methods.
+                    Digital signatures are not 100% secure. An attacker might eventually break the algorithm, exploit weak random number generators, or use forgery attacks. Expiration dates help reduce this risk over time.
                 </li>
             </ul>
 
             <div class="image-placeholder large-centered-image">
                 <div class="card-image">
                        <img src="media/image2.png" alt="Obtaining certificates from Certificate Authority">
-                    </div>
+                </div>
             </div>
-
-            <p style="clear: both;"></p> <!-- Clear floats -->
+            <div style="clear: both;"></div>
         </div>
 
         <div id="attacks" class="section">
-            <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
-            <h2 class="section-title">Attacks and Forgeries</h2>
-            <p><strong>Scenario:</strong> Assume <span class="highlight">Alice is a server that runs an automated document-signing service</span> — a system that signs digital contracts when clients send requests. (Alice is the entity tended to be attacked and her signature forged).</p>
+            <h2 class="section-title">
+                <span><i class="fas fa-user-secret"></i> Attacks and Forgeries</span>
+                <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+            </h2>
+            <p><strong>Scenario:</strong> Assume <span class="highlight">Alice is a server that runs an automated document-signing service</span>. An attacker, Mallory, wants to forge Alice's signature.</p>
             
-            <table class="attacks-table">
-                <thead>
-                    <tr>
-                        <th>Attack Type</th>
-                        <th>What the Attacker Does</th>
-                        <th>Example with Alice</th>
-                        <th>What the Attacker Knows</th>
-                        <th>Threat Level</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Key-only Attack</strong></td>
-                        <td>Tries to forge a signature knowing <strong>only Alice's public key</strong>.</td>
-                        <td>Mallory downloads Alice's public key from her website and tries to create fake signed documents.</td>
-                        <td>Public Key only</td>
-                        <td><span class="threat-level threat-low">Low (very hard)</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Known Message Attack</strong></td>
-                        <td>Uses a <strong>set of valid signed documents</strong> Mallory already has seen to help forge a new one.</td>
-                        <td>Mallory collects some of Alice's old signed contracts and studies the signatures to learn patterns.</td>
-                        <td>Public Key + Some (message, signature) pairs</td>
-                        <td><span class="threat-level threat-moderate">Moderate</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Generic Chosen Message Attack</strong></td>
-                        <td>Prepares a <strong>fixed list of messages</strong>, gets signatures on them from Alice (without knowing her key), then tries to break system.</td>
-                        <td>Mallory sends 100 prepared contracts to Alice's API to be signed, hoping they'll reveal exploitable information.</td>
-                        <td>Prepared message list (before any interaction)</td>
-                        <td><span class="threat-level threat-moderate">Moderate-High</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Directed Chosen Message Attack</strong></td>
-                        <td>Similar to Generic, but messages are chosen <strong>after</strong> seeing Alice's public key.</td>
-                        <td>After getting Alice's public key, Mallory designs 100 specific contracts tailored to what the key reveals.</td>
-                        <td>Public Key + Chooses messages after seeing it</td>
-                        <td><span class="threat-level threat-high">High</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Adaptive Chosen Message Attack</strong></td>
-                        <td>Mallory sends a message → sees signature → sends another, adjusting based on what she learns.</td>
-                        <td>Mallory sends 1 contract, sees signature, then sends another, adjusting each to extract info and eventually forge.</td>
-                        <td>Public Key + Can adapt messages mid-attack</td>
-                        <td><span class="threat-level threat-critical">Very High (realistic threat)</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div style="overflow-x:auto;">
+                <table class="attacks-table">
+                    <thead>
+                        <tr>
+                            <th>Attack Type</th>
+                            <th>What the Attacker Does</th>
+                            <th>What the Attacker Knows</th>
+                            <th>Threat Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Key-only Attack</strong></td>
+                            <td>Tries to forge a signature knowing only Alice's public key.</td>
+                            <td>Public Key only</td>
+                            <td><span class="threat-level threat-low">Low</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Known Message Attack</strong></td>
+                            <td>Uses a set of valid signed documents to help forge a new one.</td>
+                            <td>Public Key + Some (message, signature) pairs</td>
+                            <td><span class="threat-level threat-moderate">Moderate</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Generic Chosen Message</strong></td>
+                            <td>Gets signatures on a prepared list of messages to find a vulnerability.</td>
+                            <td>Prepared message list (before any interaction)</td>
+                            <td><span class="threat-level threat-moderate">Moderate</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Directed Chosen Message</strong></td>
+                            <td>Chooses messages to be signed after seeing Alice's public key to tailor the attack.</td>
+                            <td>Public Key + Chooses messages after seeing it</td>
+                            <td><span class="threat-level threat-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Adaptive Chosen Message</strong></td>
+                            <td>Sends messages sequentially, adjusting each new message based on the last signature received.</td>
+                            <td>Public Key + Can adapt messages mid-attack</td>
+                            <td><span class="threat-level threat-critical">Critical</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="differences" class="section">
-            <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
-            <h2 class="section-title">Key Differences Between Attack Types</h2>
+            <h2 class="section-title">
+                <span><i class="fas fa-cogs"></i> Key Differences Between Attack Types</span>
+                <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+            </h2>
             
             <div class="key-differences">
-                <h4>🔍 Generic Chosen Message Attack vs Known Message Attack</h4>
+                <h4>🔍 Generic Chosen vs. Known Message Attack</h4>
                 <ol>
-                    <li>For <strong>Generic</strong>, messages are <strong>chosen by Mallory</strong> (attacker), but for <strong>Known</strong>, messages are <strong>chosen by Alice</strong> or occur naturally.</li>
-                    <li>For <strong>Generic</strong>, Mallory <strong>sends messages to Alice</strong> to be signed, but for <strong>Known</strong>, Mallory only <strong>observes existing signed messages</strong>.</li>
+                    <li>In <strong>Generic</strong>, the attacker chooses the messages. In <strong>Known</strong>, the attacker only observes existing signed messages.</li>
                 </ol>
             </div>
 
             <div class="key-differences">
-                <h4>🎯 Generic vs Directed Chosen Message Attack</h4>
+                <h4>🎯 Generic vs. Directed Chosen Message Attack</h4>
                 <ol>
-                    <li>For <strong>Generic</strong>, messages are chosen <strong>before</strong> knowing Alice's public key, but for <strong>Directed</strong>, they are chosen <strong>after</strong>.</li>
-                    <li>For <strong>Generic</strong>, messages are <strong>random or generic</strong> — not tailored, but for <strong>Directed</strong>, Messages are <strong>strategically crafted</strong> to exploit potential weaknesses in Alice's public key.</li>
+                    <li>In <strong>Generic</strong>, messages are chosen before knowing the public key. In <strong>Directed</strong>, they are chosen after, allowing for a more targeted attack.</li>
                 </ol>
             </div>
 
             <div class="key-differences">
-                <h4>🔄 Adaptive vs Directed Chosen Message Attack</h4>
+                <h4>🔄 Adaptive vs. Directed Chosen Message Attack</h4>
                 <ol>
-                    <li>For <strong>Directed</strong>, all messages are chosen <strong>after seeing</strong> the public key but <strong>before</strong> seeing any signatures, but for <strong>Adaptive</strong>, Messages are chosen <strong>dynamically</strong>, one-by-one, based on signatures <strong>already received</strong>.</li>
-                    <li>For <strong>Directed</strong>, static list — all messages sent at once, but for <strong>Adaptive</strong>, dynamic — attacker learns and <strong>adjusts next message</strong> based on previous results.</li>
+                    <li>In <strong>Directed</strong>, all messages are chosen at once. In <strong>Adaptive</strong>, the attacker dynamically adjusts the next message based on the signature from the previous one.</li>
                 </ol>
             </div>
         </div>
 
         <div id="forgery-types" class="section">
-            <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
-            <h2 class="section-title">Forgery Types Based on What the Attacker Achieves</h2>
+            <h2 class="section-title">
+                <span><i class="fas fa-mask"></i> Forgery Types</span>
+                <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+            </h2>
             
-            <table class="attacks-table">
-                <thead>
-                    <tr>
-                        <th>Forgery Type</th>
-                        <th>What It Means</th>
-                        <th>Attacker's Goal / Example</th>
-                        <th>What Attacker Knows</th>
-                        <th>Threat Level</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Total Break</strong></td>
-                        <td>Attacker recovers the signer's private key.</td>
-                        <td>Mallory fully learns Alice's private key and can sign any document as Alice.</td>
-                        <td>Everything (private key!)</td>
-                        <td><span class="threat-level threat-critical">Critical</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Universal Forgery</strong></td>
-                        <td>Attacker creates a signing algorithm without needing private key.</td>
-                        <td>Mallory can sign any document without the key, by finding a flaw in the algorithm.</td>
-                        <td>Public key & flaws in algorithm</td>
-                        <td><span class="threat-level threat-critical">Severe</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Selective Forgery</strong></td>
-                        <td>Attacker forges a signature for a specific message chosen ahead of time.</td>
-                        <td>Mallory targets a specific contract ("ApproveLoan") and creates a valid fake signature for it.</td>
-                        <td>Public key (and maybe prior messages)</td>
-                        <td><span class="threat-level threat-high">High</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Existential Forgery</strong></td>
-                        <td>Attacker forges a signature for at least one arbitrary message, not chosen by the attacker.</td>
-                        <td>Mallory finds a weird message (e.g., a system log) that she didn't choose, but can create a valid signature for it.</td>
-                        <td>Public key, maybe known signatures</td>
-                        <td><span class="threat-level threat-low">Low (but dangerous)</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div style="overflow-x:auto;">
+                <table class="attacks-table">
+                    <thead>
+                        <tr>
+                            <th>Forgery Type</th>
+                            <th>What It Means</th>
+                            <th>Threat Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Total Break</strong></td>
+                            <td>Attacker recovers the signer's private key and can sign anything.</td>
+                            <td><span class="threat-level threat-critical">Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Universal Forgery</strong></td>
+                            <td>Attacker can forge a signature for any document without the key.</td>
+                            <td><span class="threat-level threat-critical">Critical</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Selective Forgery</strong></td>
+                            <td>Attacker forges a signature for a specific, pre-chosen message.</td>
+                            <td><span class="threat-level threat-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Existential Forgery</strong></td>
+                            <td>Attacker forges a signature for at least one arbitrary message (not chosen by them).</td>
+                            <td><span class="threat-level threat-low">Low</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
+        
         <div id="rsa" class="section">
-            <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+             <h2 class="section-title">
+                 <span><i class="fas fa-key"></i> RSA Signature Scheme</span>
+                 <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+            </h2>
             <div class="rsa-section">
-                <h3>🔒 RSA Signature Scheme (Direct Digital Signature)</h3>
-                <div class="image-placeholder" style="background: rgba(255,255,255,0.2); color: white;">
-                    <div class="card-image">
+                <h3>Direct Digital Signature with RSA</h3>
+                <div class="rsa-image-container">
+                    <div class="rsa-image-wrapper">
                         <img src="media/image3.png" alt="RSA Digital Signature Process Diagram">
+                        <p>This diagram shows the core process of signing a message with a private key and verifying it with the corresponding public key.</p>
+                    </div>
+                    <div class="rsa-image-wrapper">
+                        <img src="media/image4.png" alt="RSA Signature Implementation for Confidentiality">
+                        <p>For confidentiality, the signed message can be further encrypted, ensuring only the intended recipient can read it.</p>
                     </div>
                 </div>
-                <p class="rsa-confidentiality-intro">The following structure demonstrates the confidentiality principle in action:</p>
-                <div class="image-placeholder">
-                    <div class="card-image">
-                        <img src="media/image4.png" alt="RSA Signature Implementation Diagram">
-                    </div>
-                </div>
-                <p class="rsa-image-caption">RSA Signature Implementation Diagram</p>
-                <p class="rsa-image-description">Confidentiality is ensured by encrypting both the message and its digital signature. This encryption uses a shared secret key, known as symmetric encryption.</p>
             </div>
         </div>
 
         <div id="questions" class="section">
-            <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
-            <div class="review-questions">
-                <h3>📝 Review Questions</h3>
+            <h2 class="section-title">
+                <span><i class="fas fa-question-circle"></i> Review Questions</span>
+                <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+            </h2>
+            <div class="review-questions-container">
+                <div class="question" onclick="toggleAnswer(this)">
+                    <div class="question-title">(1) What are two common disputes in message authentication? <i class="fas fa-chevron-down arrow-icon"></i></div>
+                    <div class="question-answer">
+                        A: The sender denies sending the message (non-repudiation), or the receiver claims the message was altered after signing (integrity).
+                    </div>
+                </div>
+
+                <div class="question" onclick="toggleAnswer(this)">
+                    <div class="question-title">(2) What are the essential properties of a digital signature? <i class="fas fa-chevron-down arrow-icon"></i></div>
+                    <div class="question-answer">
+                        A: Authenticity (verifies sender), Integrity (detects changes), and Non-repudiation (sender cannot deny).
+                    </div>
+                </div>
+
+                <div class="question" onclick="toggleAnswer(this)">
+                    <div class="question-title">(3) What requirements must a digital signature scheme satisfy? <i class="fas fa-chevron-down arrow-icon"></i></div>
+                    <div class="question-answer">
+                        A: It must be verifiable by third parties and computationally infeasible to forge a signature without the private key.
+                    </div>
+                </div>
+
+                <div class="question" onclick="toggleAnswer(this)">
+                    <div class="question-title">(4) What is the difference between direct and arbitrated digital signatures? <i class="fas fa-chevron-down arrow-icon"></i></div>
+                    <div class="question-answer">
+                        A: <strong>Direct:</strong> The receiver verifies the signature directly with the sender's public key. <strong>Arbitrated:</strong> A trusted third party (arbitrator) is involved in verifying signatures to resolve disputes.
+                    </div>
+                </div>
                 
                 <div class="question" onclick="toggleAnswer(this)">
-                    <div class="question-title">(1) List two disputes that can arise in the context of message authentication? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
+                    <div class="question-title">(5) In what order should signing and encryption be applied? <i class="fas fa-chevron-down arrow-icon"></i></div>
                     <div class="question-answer">
-                        <strong>Dispute 1:</strong> The sender denies having sent the message (non-repudiation issue).<br>
-                        <strong>Dispute 2:</strong> The receiver claims the message was altered or forged after signing (integrity issue).
+                        A: <strong>Sign first, then encrypt.</strong> This ensures the signature applies to the original message content and can be verified by anyone after decryption.
                     </div>
                 </div>
 
                 <div class="question" onclick="toggleAnswer(this)">
-                    <div class="question-title">(2) What are the properties a digital signature should have? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
+                    <div class="question-title">(6) What are some threats to a direct digital signature scheme? <i class="fas fa-chevron-down arrow-icon"></i></div>
                     <div class="question-answer">
-                        <strong>Authenticity:</strong> Confirms the sender's identity.<br>
-                        <strong>Integrity:</strong> Detects any changes to the signed message.<br>
-                        <strong>Non-repudiation:</strong> Prevents the sender from denying the signature later.
-                    </div>
-                </div>
-
-                <div class="question" onclick="toggleAnswer(this)">
-                    <div class="question-title">(3) What requirements should a digital signature scheme satisfy? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
-                    <div class="question-answer">
-                        <strong>Verifiability:</strong> Third parties must be able to verify signatures.<br>
-                        <strong>Security:</strong> It should be computationally infeasible to forge signatures without the private key as only the signer can generate a valid signature for a message.
-                    </div>
-                </div>
-
-                <div class="question" onclick="toggleAnswer(this)">
-                    <div class="question-title">(4) What is the difference between direct and arbitrated digital signature? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
-                    <div class="question-answer">
-                        <strong>Direct digital signature:</strong> The receiver verifies the signature directly using the sender's public key, without a trusted third party.<br>
-                        <strong>Arbitrated digital signature:</strong> A trusted third party (arbitrator) is involved in verifying and managing signatures, which can help resolve disputes.
-                    </div>
-                </div>
-
-                <div class="question" onclick="toggleAnswer(this)">
-                    <div class="question-title">(5) In what order should the signature function and the confidentiality function be applied to a message, and why? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
-                    <div class="question-answer">
-                        <strong>First:</strong> The message is digitally signed (signature function).<br>
-                        <strong>Then:</strong> The signed message is encrypted for confidentiality.<br>
-                        <strong>Reason:</strong> Signing first ensures the signature covers the original message and can be verified after decryption. Encrypting first would prevent signature verification without decrypting first, which can cause security and efficiency issues.
-                    </div>
-                </div>
-
-                <div class="question" onclick="toggleAnswer(this)">
-                    <div class="question-title">(6) What are some threats associated with a direct digital signature scheme? <i class="fas fa-chevron-circle-down arrow-icon"></i></div>
-                    <div class="question-answer">
-                        <strong>Key-only attack:</strong> Attacker tries to forge signatures knowing only the public key.<br>
-                        <strong>Known message attack:</strong> Attacker uses known signed messages to attempt forgery.<br>
-                        <strong>Chosen message attacks:</strong> Attacker obtains signatures on messages of their choice to help forge other signatures (generic, directed, adaptive).
+                        A: Key-only attacks, known message attacks, and various chosen message attacks (generic, directed, adaptive).
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script>
-        // Basic code protection
-        (function() {
-            // Prevent viewing source code
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.keyCode === 85) { // Ctrl+U
-                    e.preventDefault();
-                    return false;
-                }
-            });
-
-            // Allow normal right-click, but show copyright notice if right-click with modifier keys
-            document.addEventListener('contextmenu', function(e) {
-                if (e.ctrlKey || e.shiftKey || e.altKey) {
-                    e.preventDefault();
-                    showCopyrightNotice();
-                    return false;
-                }
-                // Otherwise, allow normal right-click
-            });
-
-            // Show copyright notice on DevTools shortcuts
-            document.addEventListener('keydown', function(e) {
-                // Block Ctrl+Shift+I (Inspect)
-                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
-                    e.preventDefault();
-                    showCopyrightNotice();
-                    return false;
-                }
-                // Block F12
-                if (e.keyCode === 123) {
-                    e.preventDefault();
-                    showCopyrightNotice();
-                    return false;
-                }
-                // Block Ctrl+Shift+J (Console)
-                if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
-                    e.preventDefault();
-                    showCopyrightNotice();
-                    return false;
-                }
-                // Block Ctrl+Shift+C (Inspect Element)
-                if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
-                    e.preventDefault();
-                    showCopyrightNotice();
-                    return false;
-                }
-            });
-
-            // Optionally: Detect DevTools open by window size heuristics
-            let devtoolsOpen = false;
-            setInterval(function() {
-                const widthThreshold = window.outerWidth - window.innerWidth > 160;
-                const heightThreshold = window.outerHeight - window.innerHeight > 160;
-                if ((widthThreshold || heightThreshold) && !devtoolsOpen) {
-                    devtoolsOpen = true;
-                    showCopyrightNotice();
-                } else if (!(widthThreshold || heightThreshold)) {
-                    devtoolsOpen = false;
-                }
-            }, 1000);
-        })();
-
-        function toggleAnswer(element) {
-            element.classList.toggle('active');
-        }
-
-        function scrollToSection(sectionId) {
-            document.getElementById(sectionId).scrollIntoView({ 
-                behavior: 'smooth' 
-            });
-        }
-
-        function updateProgressBar() {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = (scrollTop / docHeight) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-        }
-
-        window.addEventListener('scroll', updateProgressBar);
-
-        // New function to update navigation button active state
-        function updateNavButtons() {
-            const sections = document.querySelectorAll('.section');
-            const navButtons = document.querySelectorAll('.nav-btn');
-
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 100; // Adjust for header/padding
-                const sectionBottom = sectionTop + section.offsetHeight;
-
-                if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
-                    navButtons.forEach(button => {
-                        button.classList.remove('active');
-                    });
-                    const correspondingButton = document.querySelector(`.nav-btn[data-section="${section.id}"]`);
-                    if (correspondingButton) {
-                        correspondingButton.classList.add('active');
-                    }
-                }
-            });
-        }
-
-        // Call updateNavButtons on scroll and on page load
-        window.addEventListener('scroll', updateNavButtons);
-        document.addEventListener('DOMContentLoaded', updateNavButtons);
-
-        // Utility: Save and restore inline styles
-        function saveStyles(el, props) {
-            const saved = {};
-            props.forEach(p => saved[p] = el.style[p]);
-            return saved;
-        }
-
-        function restoreStyles(el, saved) {
-            Object.keys(saved).forEach(p => el.style[p] = saved[p]);
-        }
-
-        // New utility for saving/restoring styles for multiple elements
-        function saveMultipleStyles(els, props) {
-            return Array.from(els).map(el => saveStyles(el, props));
-        }
-
-        function restoreMultipleStyles(els, savedArr) {
-            els.forEach((el, i) => restoreStyles(el, savedArr[i]));
-        }
-
-        function downloadWordFile() {
-            // Placeholder for Word file download logic
-            window.open('assets/Digital_Sign_Sheet_9.pdf', '_blank');
-        }
-
-        // Theme toggle logic
-        const themeSwitch = document.getElementById('themeSwitch');
-        const root = document.documentElement;
-        function setTheme(mode) {
-            if (mode === 'dark') {
-                root.setAttribute('data-theme', 'dark');
-                themeSwitch.classList.add('dark');
-            } else {
-                root.removeAttribute('data-theme');
-                themeSwitch.classList.remove('dark');
-            }
-            localStorage.setItem('theme', mode);
-        }
-        themeSwitch.addEventListener('click', function() {
-            const isDark = root.getAttribute('data-theme') === 'dark';
-            setTheme(isDark ? 'light' : 'dark');
-        });
-        // On load, set theme from localStorage or system preference
-        (function() {
-            const saved = localStorage.getItem('theme');
-            if (saved) setTheme(saved);
-            else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme('dark');
-        })();
-
-        // Download section as PNG (improved version)
-        async function downloadSectionPng(btn) {
-            const section = btn.closest('.section');
-            
-            // Show all hidden answers in this section
-            const hiddenAnswers = section.querySelectorAll('.question-answer');
-            const prevDisplay = [];
-            hiddenAnswers.forEach((el, i) => {
-                prevDisplay[i] = el.style.display;
-                el.style.display = 'block';
-            });
-
-            // Hide all download buttons and nav in this section
-            const buttons = section.querySelectorAll('.download-section-btn, .download-btn');
-            buttons.forEach(b => b.classList.add('screenshot-hide'));
-            const nav = document.querySelector('.navigation');
-            if (nav) nav.classList.add('screenshot-hide');
-
-            // Save and set styles for full-width, clean screenshot
-            const styleProps = ['position','width','maxWidth','left','top','zIndex','boxShadow','background','overflow','margin','padding','opacity','transform','transition'];
-            const saved = saveStyles(section, styleProps);
-            
-            // Make section fully visible and remove any transitions
-            section.style.position = 'static';
-            section.style.width = '100vw';
-            section.style.maxWidth = '100vw';
-            section.style.left = '0';
-            section.style.top = '0';
-            section.style.zIndex = '9999';
-            section.style.boxShadow = 'none';
-            section.style.background = getComputedStyle(section).backgroundColor || 'white';
-            section.style.overflow = 'visible';
-            section.style.margin = '0';
-            section.style.padding = '0';
-            section.style.opacity = '1';
-            section.style.transform = 'none';
-            section.style.transition = 'none';
-
-            await new Promise(r => requestAnimationFrame(r));
-            await new Promise(r => setTimeout(r, 20));
-
-            try {
-                const canvas = await html2canvas(section, {
-                    backgroundColor: null,
-                    useCORS: true,
-                    scale: 2,
-                    scrollY: -window.scrollY,
-                    logging: false,
-                    allowTaint: true
-                });
-                
-                const link = document.createElement('a');
-                link.download = section.id + '.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            } catch (error) {
-                console.error('Error generating section PNG:', error);
-                alert('Failed to generate section PNG. Please try again.');
-            }
-
-            // Restore all styles and visibility
-            restoreStyles(section, saved);
-            buttons.forEach(b => b.classList.remove('screenshot-hide'));
-            if (nav) nav.classList.remove('screenshot-hide');
-            hiddenAnswers.forEach((el, i) => {
-                el.style.display = prevDisplay[i];
-            });
-        }
-
-        // Download full page as PNG (improved version)
-        async function downloadFullPagePng() {
-            // Show all hidden answers
-            const allAnswers = document.querySelectorAll('.question-answer');
-            const prevDisplay = [];
-            allAnswers.forEach((el, i) => {
-                prevDisplay[i] = el.style.display;
-                el.style.display = 'block';
-            });
-
-            // Hide all download buttons and nav
-            const allButtons = document.querySelectorAll('.download-section-btn, .download-btn');
-            allButtons.forEach(b => b.classList.add('screenshot-hide'));
-            const nav = document.querySelector('.navigation');
-            if (nav) nav.classList.add('screenshot-hide');
-
-            // Make all sections fully visible (remove fade-in effect)
-            const allSections = document.querySelectorAll('.section');
-            const sectionProps = ['opacity', 'transform', 'transition'];
-            const savedSectionStyles = saveMultipleStyles(allSections, sectionProps);
-            
-            allSections.forEach(section => {
-                section.style.opacity = '1';
-                section.style.transform = 'none';
-                section.style.transition = 'none';
-            });
-
-            // Save and set styles for full-width, clean screenshot
-            const container = document.querySelector('.container');
-            const containerProps = ['position','width','maxWidth','left','top','zIndex','boxShadow','background','overflow','margin','padding'];
-            const savedContainer = saveStyles(container, containerProps);
-            
-            container.style.position = 'static';
-            container.style.width = '100vw';
-            container.style.maxWidth = '100vw';
-            container.style.left = '0';
-            container.style.top = '0';
-            container.style.zIndex = '9999';
-            container.style.boxShadow = 'none';
-            container.style.background = getComputedStyle(container).backgroundColor || 'white';
-            container.style.overflow = 'visible';
-            container.style.margin = '0';
-            container.style.padding = '0';
-
-            await new Promise(r => requestAnimationFrame(r));
-            await new Promise(r => setTimeout(r, 20));
-
-            try {
-                const canvas = await html2canvas(container, {
-                    backgroundColor: null,
-                    useCORS: true,
-                    scale: 2,
-                    scrollY: -window.scrollY,
-                    logging: false,
-                    allowTaint: true
-                });
-                
-                const link = document.createElement('a');
-                link.download = 'full_page.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            } catch (error) {
-                console.error('Error generating full page PNG:', error);
-                alert('Failed to generate full page PNG. Please try again.');
-            }
-
-            // Restore all styles and visibility
-            restoreStyles(container, savedContainer);
-            restoreMultipleStyles(allSections, savedSectionStyles);
-            allButtons.forEach(b => b.classList.remove('screenshot-hide'));
-            if (nav) nav.classList.remove('screenshot-hide');
-            allAnswers.forEach((el, i) => {
-                el.style.display = prevDisplay[i];
-            });
-        }
-
-        // Add smooth animations on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.section').forEach(section => {
-            section.style.opacity = '0';
-            section.style.transform = 'translateY(20px)';
-            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(section);
-        });
-
-        // Copyright notice functionality
-        function showCopyrightNotice() {
-            const notification = document.getElementById('copyrightNotification');
-            notification.classList.add('show');
-            
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                if (notification.classList.contains('show')) {
-                    hideCopyrightNotice();
-                }
-            }, 5000);
-        }
-
-        function hideCopyrightNotice() {
-            const notification = document.getElementById('copyrightNotification');
-            notification.classList.remove('show');
-        }
-
-        // Show notification on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(showCopyrightNotice, 1000);
-        });
-    </script>
 
     <footer>
-        <div class="footer-content">
-            <p>Data Security Learning Module - Digital Signatures | Created for Educational Purposes | By Eng. Eslam Osama</p>
-            <div class="copyright-notice">
-                <button class="copyright-btn" onclick="showCopyrightNotice()">
-                    <i class="fas fa-copyright"></i> All Rights Reserved
-                </button>
-            </div>
-        </div>
+        <p>Data Security Learning Module - Digital Signatures | By Eng. Eslam Osama</p>
+        <button class="copyright-btn" onclick="showCopyrightNotice()">
+            <i class="fas fa-copyright"></i> All Rights Reserved
+        </button>
     </footer>
 
-    <!-- Copyright Notification -->
     <div class="notification" id="copyrightNotification">
         <div class="notification-header">
-            <div class="notification-title">
-                <i class="fas fa-shield-alt"></i> Copyright Notice
-            </div>
-            <button class="notification-close" onclick="hideCopyrightNotice()">
-                <i class="fas fa-times"></i>
-            </button>
+            <div class="notification-title"><i class="fas fa-shield-alt"></i> Copyright Notice</div>
+            <button class="notification-close" onclick="hideCopyrightNotice()"><i class="fas fa-times"></i></button>
         </div>
-        <div class="notification-content">
-            <p>This content is protected by copyright law. Unauthorized copying, distribution, or use of this material is strictly prohibited. The code, design, and content of this educational module are the exclusive property of the creator. Any reproduction or distribution without express written permission is a violation of copyright law.</p>
-            <p class="disclaimer">This module is provided for educational purposes only. The creator makes no warranties about the completeness, reliability, or accuracy of this information.</p>
-        </div>
+        <p>This content is protected by copyright law. Unauthorized copying, distribution, or use is strictly prohibited.</p>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeSwitch = document.getElementById('themeSwitch');
+            const root = document.documentElement;
+            const progressBar = document.getElementById('progressBar');
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const navDropdown = document.getElementById('navDropdown');
+            const sections = document.querySelectorAll('.section');
+            const questions = document.querySelectorAll('.question');
+            
+            // --- Theme Management ---
+            function setTheme(mode) {
+                if (mode === 'dark') {
+                    root.setAttribute('data-theme', 'dark');
+                    themeSwitch.classList.add('dark');
+                } else {
+                    root.removeAttribute('data-theme');
+                    themeSwitch.classList.remove('dark');
+                }
+                localStorage.setItem('theme', mode);
+            }
+
+            themeSwitch.addEventListener('click', () => {
+                const isDark = root.getAttribute('data-theme') === 'dark';
+                setTheme(isDark ? 'light' : 'dark');
+            });
+            
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else if (prefersDark) {
+                setTheme('dark');
+            }
+
+            // --- Navigation ---
+            function showSection(sectionId) {
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                const activeSection = document.getElementById(sectionId);
+                if (activeSection) {
+                    activeSection.classList.add('active');
+                }
+                
+                navButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.section === sectionId);
+                });
+                if(navDropdown.value !== sectionId) {
+                    navDropdown.value = sectionId;
+                }
+                updateProgressBar();
+            }
+
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => showSection(btn.dataset.section));
+            });
+            
+            navDropdown.addEventListener('change', () => showSection(navDropdown.value));
+
+            // --- Progress Bar ---
+            function updateProgressBar() {
+                const activeSection = document.querySelector('.section.active');
+                if (!activeSection) return;
+
+                const sectionIndex = Array.from(sections).indexOf(activeSection);
+                const progress = (sectionIndex / (sections.length - 1)) * 100;
+                progressBar.style.width = progress + '%';
+            }
+            
+            // --- Accordion for Questions ---
+            window.toggleAnswer = (element) => {
+                element.classList.toggle('active');
+            }
+
+            // --- Copyright Notice ---
+            window.showCopyrightNotice = () => {
+                const notice = document.getElementById('copyrightNotification');
+                notice.classList.add('show');
+                setTimeout(() => notice.classList.remove('show'), 5000);
+            };
+            window.hideCopyrightNotice = () => {
+                document.getElementById('copyrightNotification').classList.remove('show');
+            };
+            
+            // --- Loading Screen ---
+            const loadingScreen = document.getElementById('loadingScreen');
+            function showLoading(message) {
+                loadingScreen.querySelector('.loading-text').textContent = message;
+                loadingScreen.classList.add('show');
+            }
+            function hideLoading() {
+                loadingScreen.classList.remove('show');
+            }
+
+            // --- Download Functionality ---
+            window.downloadOriginalFile = () => {
+                window.open('assets/Digital_Sign_Sheet_9.pdf', '_blank');
+            };
+
+            async function prepareForCanvas(targetElement, show) {
+                const elementsToToggle = targetElement.querySelectorAll('.question');
+                const originalStates = new Map();
+
+                if (show) {
+                    document.body.classList.add('screenshot-mode');
+                    elementsToToggle.forEach(el => {
+                        originalStates.set(el, el.classList.contains('active'));
+                        el.classList.add('active');
+                    });
+                     // Hide all download buttons and nav during capture
+                    document.querySelectorAll('.download-section-btn, .download-btn, .navigation').forEach(b => b.classList.add('screenshot-hide'));
+
+                } else {
+                    document.body.classList.remove('screenshot-mode');
+                    elementsToToggle.forEach(el => {
+                        if (originalStates.has(el) && !originalStates.get(el)) {
+                            el.classList.remove('active');
+                        }
+                    });
+                    document.querySelectorAll('.download-section-btn, .download-btn, .navigation').forEach(b => b.classList.remove('screenshot-hide'));
+                }
+                
+                await new Promise(r => setTimeout(r, 50)); // Allow DOM to update
+            }
+
+            window.downloadSectionPng = async (button) => {
+                const section = button.closest('.section');
+                showLoading('Generating Image...');
+                
+                await prepareForCanvas(section, true);
+                
+                try {
+                    const canvas = await html2canvas(section, { 
+                        scale: 2, 
+                        useCORS: true,
+                        backgroundColor: null 
+                    });
+                    const link = document.createElement('a');
+                    link.download = `${section.id}.png`;
+                    link.href = canvas.toDataURL('image/png', 1.0);
+                    link.click();
+                } catch (e) {
+                    console.error("Error generating PNG:", e);
+                    alert("Could not generate image.");
+                } finally {
+                    await prepareForCanvas(section, false);
+                    hideLoading();
+                }
+            }
+
+            window.downloadFullPageZip = async () => {
+                showLoading('Generating ZIP file...');
+                const zip = new JSZip();
+                const sectionIds = ['intro', 'attacks', 'differences', 'forgery-types', 'rsa', 'questions'];
+
+                for (const id of sectionIds) {
+                    const section = document.getElementById(id);
+                    if (!section) continue;
+
+                    const wasActive = section.classList.contains('active');
+                    if (!wasActive) section.classList.add('active');
+                    
+                    await prepareForCanvas(section, true);
+
+                    try {
+                        const canvas = await html2canvas(section, { 
+                            scale: 2, 
+                            useCORS: true,
+                            backgroundColor: null
+                        });
+                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                        zip.file(`${id}.png`, blob);
+                    } catch(e) {
+                        console.error(`Failed to capture section ${id}:`, e);
+                    } finally {
+                       await prepareForCanvas(section, false);
+                       if (!wasActive) section.classList.remove('active');
+                    }
+                }
+                
+                showSection(navDropdown.value); 
+                
+                try {
+                    const zipBlob = await zip.generateAsync({type:"blob"});
+                    saveAs(zipBlob, "Digital_Signatures_Module.zip");
+                } catch(e) {
+                    console.error("Error generating ZIP:", e);
+                    alert("Could not generate ZIP file.");
+                } finally {
+                    hideLoading();
+                }
+            };
+
+            // Initial setup
+            showSection('intro');
+        });
+    </script>
 </body>
 </html>
