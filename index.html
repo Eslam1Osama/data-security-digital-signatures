@@ -137,42 +137,55 @@
         }
 
         .navigation {
-            background: var(--nav-bg);
-            backdrop-filter: blur(10px);
+            background: var(--nav-bg); 
+            backdrop-filter: blur(10px); 
             border-radius: 50px;
-            padding: 15px;
-            margin-bottom: 30px;
-            display: flex;
+            padding: 10px; 
+            margin-bottom: 30px; 
+            display: flex; 
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .nav-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .nav-btn {
-            background: var(--nav-btn-bg);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 500;
-            display: flex;
             align-items: center;
-            gap: 8px;
+            position: sticky; 
+            top: 10px; 
+            z-index: 100;
+            box-shadow: var(--shadow);
         }
-
+        .nav-buttons {
+            display: none; /* Hidden by default, shown on larger screens */
+            flex-wrap: wrap; 
+            gap: 10px; 
+            justify-content: center;
+        }
+        .nav-btn {
+            background: var(--nav-btn-bg); color: white; border: none; padding: 12px 20px;
+            border-radius: 25px; cursor: pointer; transition: var(--transition); font-weight: 500;
+            display: flex; align-items: center; gap: 8px;
+        }
         .nav-btn:hover, .nav-btn.active {
-            background: var(--nav-btn-active-bg);
-            transform: translateY(-2px);
+            background: var(--nav-btn-active-bg); transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+        .nav-dropdown-container { 
+            display: block; /* Shown by default, hidden on larger screens */
+            width: 100%; 
+            padding: 0 10px; 
+        }
+        .nav-dropdown {
+            width: 100%; padding: 12px 20px; border-radius: 25px; border: 1px solid var(--blue1);
+            background: var(--section-bg); color: var(--text-main); font-size: 1em;
+            font-weight: 500; cursor: pointer; appearance: none; -webkit-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat; background-position: right 15px center;
+        }
+        
+        /* --- Responsive Navigation Logic --- */
+        @media (min-width: 992px) {
+            .nav-buttons {
+                display: flex;
+            }
+            .nav-dropdown-container {
+                display: none;
+            }
         }
 
         .section {
@@ -757,9 +770,7 @@
         @media (max-width: 768px) {
             .nav-buttons { display: none; }
             .nav-dropdown-container { display: block; }
-            .navigation { padding: 10px; }
-            .intro-image-float { float: none; max-width: 90%; margin: 20px auto; }
-            .attacks-table { font-size: 0.9em; }
+            .navigation { padding: 10px; border-radius: 30px;}
         }
 
         @media (max-width: 480px) {
@@ -1221,12 +1232,14 @@
         </div>
 
         <div class="navigation">
-            <button class="nav-btn active" data-section="intro"><i class="fas fa-book-open"></i> Introduction</button>
-            <button class="nav-btn" data-section="attacks"><i class="fas fa-user-secret"></i> Attacks & Forgeries</button>
-            <button class="nav-btn" data-section="differences"><i class="fas fa-cogs"></i> Key Differences</button>
-            <button class="nav-btn" data-section="forgery-types"><i class="fas fa-mask"></i> Forgery Types</button>
-            <button class="nav-btn" data-section="rsa"><i class="fas fa-key"></i> RSA Scheme</button>
-            <button class="nav-btn" data-section="questions"><i class="fas fa-question-circle"></i> Review Questions</button>
+            <div class="nav-buttons">
+                <button class="nav-btn active" data-section="intro"><i class="fas fa-book-open"></i> Introduction</button>
+                <button class="nav-btn" data-section="attacks"><i class="fas fa-user-secret"></i> Attacks & Forgeries</button>
+                <button class="nav-btn" data-section="differences"><i class="fas fa-cogs"></i> Key Differences</button>
+                <button class="nav-btn" data-section="forgery-types"><i class="fas fa-mask"></i> Forgery Types</button>
+                <button class="nav-btn" data-section="rsa"><i class="fas fa-key"></i> RSA Scheme</button>
+                <button class="nav-btn" data-section="questions"><i class="fas fa-question-circle"></i> Review Questions</button>
+            </div>
             <div class="nav-dropdown-container">
                 <select id="navDropdown" class="nav-dropdown">
                     <option value="intro">Introduction</option>
