@@ -1,36 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- 
+    Professional SVG Favicon for "Digital Signatures"
+    Author: Gemini
+    Version: 2.0 (Favicon Conversion)
+    Description: A modern, symbolic favicon representing digital verification and security.
+  -->
   <defs>
-    <!-- Clean gradient for professional look -->
-    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#00ACC1;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#4DD0E1;stop-opacity:1" />
+    <!-- Professional Color Palette from Logo -->
+    <linearGradient id="dsShieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#26A69A;" />
+      <stop offset="100%" style="stop-color:#00796B;" />
     </linearGradient>
 
-    <!-- Subtle shadow for depth -->
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0.5" dy="0.5" stdDeviation="0.5" flood-color="rgba(0,0,0,0.2)"/>
+    <!-- Refined Shadow Filter for Favicon Scale -->
+    <filter id="dsShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000000" flood-opacity="0.2"/>
     </filter>
   </defs>
 
-  <!-- Clean, Professional Shield Design -->
-  <g transform="translate(16, 16)" filter="url(#shadow)">
-    <!-- Main shield body - clean and bold -->
-    <path d="M-6 -7 L-2 -5 L-2 1 C-2 4 -4 6 0 8 C4 6 2 4 2 1 L2 -5 Z"
-          fill="url(#shieldGrad)"
-          stroke="#00323d"
-          stroke-width="0.8"/>
+  <!-- Icon Group -->
+  <g transform="translate(3, 2)" filter="url(#dsShadow)">
+    <!-- Main Shield Body (scaled down) -->
+    <path d="M13 0 C 26 0, 26 8, 26 14.5 C 26 23, 19 28, 13 32 C 7 28, 0 23, 0 14.5 C 0 8, 0 0, 13 0 Z" fill="url(#dsShieldGradient)" />
+    
+    <!-- Shield Highlight -->
+    <path d="M13 1 C 25 1, 25 8.5, 25 14.5 C 25 22.5, 18.5 27, 13 30.5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1" />
 
-    <!-- Simple key design - clean and recognizable -->
-    <g transform="translate(0, 1.5)">
-      <!-- Key head -->
-      <circle cx="0" cy="0" r="1.8" fill="#00323d"/>
-      <!-- Key shaft -->
-      <rect x="-0.4" y="0" width="0.8" height="3.5" fill="#00323d"/>
-      <!-- Single key tooth for simplicity -->
-      <rect x="-1" y="2" width="0.6" height="0.3" fill="#00323d"/>
+    <!-- Simplified Symbolic Key Icon -->
+    <g transform="translate(13, 16)">
+      <!-- Key Head -->
+      <circle cx="0" cy="-5" r="4.5" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+      
+      <!-- Key Shaft -->
+      <rect x="-1" y="-0.5" width="2" height="10" fill="#FFFFFF"/>
+
+      <!-- Key Teeth -->
+      <rect x="1" y="4" width="4" height="1.5" fill="#FFFFFF"/>
     </g>
-
-    <!-- Single security bar - clean and simple -->
-    <rect x="-4" y="-2.5" width="8" height="0.6" fill="#00323d" opacity="0.9"/>
   </g>
 </svg>
+

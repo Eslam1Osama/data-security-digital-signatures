@@ -1,61 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 70" width="280" height="70">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
   <!-- 
-    Professional SVG Logo for "Digital Signatures"
+    Professional SVG Favicon for "Digital Signatures"
     Author: Gemini
-    Version: 1.2 (Symbol Update)
-    Description: A modern, symbolic logo representing digital verification and security.
+    Version: 2.0 (Favicon Conversion)
+    Description: A modern, symbolic favicon representing digital verification and security.
   -->
   <defs>
-    <!-- Professional Color Palette -->
+    <!-- Professional Color Palette from Logo -->
     <linearGradient id="dsShieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#26A69A;" />
       <stop offset="100%" style="stop-color:#00796B;" />
     </linearGradient>
-    <linearGradient id="dsAccentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#80CBC4;" />
-      <stop offset="100%" style="stop-color:#B2DFDB;" />
-    </linearGradient>
 
-    <!-- Refined Shadow Filter -->
+    <!-- Refined Shadow Filter for Favicon Scale -->
     <filter id="dsShadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.1"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000000" flood-opacity="0.2"/>
     </filter>
   </defs>
 
   <!-- Icon Group -->
-  <g transform="translate(10, 8)" filter="url(#dsShadow)">
-    <!-- Main Shield Body -->
-    <path d="M25 0 C 50 0, 50 15, 50 27.5 C 50 45, 35 55, 25 62 C 15 55, 0 45, 0 27.5 C 0 15, 0 0, 25 0 Z" fill="url(#dsShieldGradient)" />
+  <g transform="translate(3, 2)" filter="url(#dsShadow)">
+    <!-- Main Shield Body (scaled down) -->
+    <path d="M13 0 C 26 0, 26 8, 26 14.5 C 26 23, 19 28, 13 32 C 7 28, 0 23, 0 14.5 C 0 8, 0 0, 13 0 Z" fill="url(#dsShieldGradient)" />
     
     <!-- Shield Highlight -->
-    <path d="M25 2 C 48 2, 48 16, 48 27.5 C 48 44, 34 53, 25 59" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" />
+    <path d="M13 1 C 25 1, 25 8.5, 25 14.5 C 25 22.5, 18.5 27, 13 30.5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1" />
 
-    <!-- Symbolic Key Icon -->
-    <g transform="translate(25, 30)">
+    <!-- Simplified Symbolic Key Icon -->
+    <g transform="translate(13, 16)">
       <!-- Key Head -->
-      <circle cx="0" cy="-10" r="8" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+      <circle cx="0" cy="-5" r="4.5" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
       
       <!-- Key Shaft -->
-      <rect x="-1.5" y="-2" width="3" height="18" fill="#FFFFFF"/>
+      <rect x="-1" y="-0.5" width="2" height="10" fill="#FFFFFF"/>
 
       <!-- Key Teeth -->
-      <rect x="1.5" y="8" width="7" height="2.5" fill="#FFFFFF"/>
-      <rect x="1.5" y="13" width="5" height="2.5" fill="#FFFFFF"/>
+      <rect x="1" y="4" width="4" height="1.5" fill="#FFFFFF"/>
     </g>
   </g>
-
-  <!-- Typography Group -->
-  <g transform="translate(75, 12)">
-    <!-- Main Title -->
-    <text x="0" y="20" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="600" fill="#37474F" letter-spacing="-0.5">
-      Digital Signatures
-    </text>
-    
-    <!-- Subtitle -->
-    <text x="0" y="40" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="400" fill="#546E7A" letter-spacing="0.25">
-      Verification &amp; Security Module
-    </text>
-  </g>
-
 </svg>
 
