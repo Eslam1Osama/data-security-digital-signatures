@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Digital Signatures Logo](assets/favicon.svg)
+![Digital Signatures Logo](assets/logo.svg)
 
 **Enterprise-Grade Educational Technology Solution**
 
