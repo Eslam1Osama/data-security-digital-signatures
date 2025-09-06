@@ -313,7 +313,7 @@ is strictly prohibited without express written permission from EOPeak.
 - **Course Instructor:** Dr. Mahmoud Yehia
 - **Academic Institution:** College of Engineering & Technology, AASTMT
 - **Department:** Computer Engineering
-- **Course:** ECE4304 Data Security
+- **Course:** ECE4304 Data Security 
 
 ### 🏗️ **Technical Excellence**
 - **Open Source Libraries:** Gratitude to the developers of html2canvas, JSZip, and FileSaver
