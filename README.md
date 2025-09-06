@@ -77,21 +77,6 @@
 - **Cross-Platform:** Consistent experience across all modern browsers
 - **SEO Optimized:** Complete meta tags and structured content
 
-## 🖼️ Screenshots
-
-<div align="center">
-
-### Desktop Experience
-![Desktop Screenshot](https://via.placeholder.com/800x400/00ACC1/FFFFFF?text=Desktop+Interface)
-
-### Mobile Responsive
-![Mobile Screenshot](https://via.placeholder.com/300x600/4DD0E1/00323d?text=Mobile+Interface)
-
-### Dark Mode
-![Dark Mode Screenshot](https://via.placeholder.com/800x400/00323d/E0F7FA?text=Dark+Mode+Interface)
-
-</div>
-
 ---
 
 ## 🏗️ Architecture
