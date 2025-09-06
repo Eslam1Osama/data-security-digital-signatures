@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Block access to sensitive files
+Disallow: /assets/Digital_Sign_Sheet_9.pdf
+
+# Sitemap
+Sitemap: https://yourdomain.com/sitemap.xml

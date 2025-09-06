@@ -1,0 +1,44 @@
+{
+  "name": "Digital Signatures - Interactive Learning Module",
+  "short_name": "Digital Signatures",
+  "description": "Comprehensive educational module for understanding digital signatures, cryptography, and security concepts with interactive features and visual learning aids.",
+  "version": "1.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#E0F7FA",
+  "theme_color": "#00ACC1",
+  "orientation": "portrait-primary",
+  "categories": ["education", "productivity", "security"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/logo.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Introduction",
+      "short_name": "Intro",
+      "description": "Start with the introduction to digital signatures",
+      "url": "/#intro",
+      "icons": [{ "src": "assets/favicon.svg", "sizes": "32x32" }]
+    },
+    {
+      "name": "Review Questions",
+      "short_name": "Questions",
+      "description": "Test your knowledge with review questions",
+      "url": "/#questions",
+      "icons": [{ "src": "assets/favicon.svg", "sizes": "32x32" }]
+    }
+  ]
+}

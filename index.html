@@ -3,11 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Signature - Interactive Learning</title>
+
+    <!-- Primary Meta Tags -->
+    <title>Digital Signatures - Interactive Learning Module</title>
+    <meta name="title" content="Digital Signatures - Interactive Learning Module">
+    <meta name="description" content="Comprehensive educational module for understanding digital signatures, cryptography, and security concepts. Interactive learning with visual aids, review questions, and downloadable content.">
+    <meta name="keywords" content="digital signatures, cryptography, cybersecurity, public key infrastructure, RSA algorithm, data security, interactive learning">
+    <meta name="author" content="Eng. Eslam Osama">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/">
+    <meta property="og:title" content="Digital Signatures - Interactive Learning Module">
+    <meta property="og:description" content="Comprehensive educational module for understanding digital signatures, cryptography, and security concepts with interactive features and visual learning aids.">
+    <meta property="og:image" content="https://yourdomain.com/assets/logo.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Digital Signatures Learning Module">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://yourdomain.com/">
+    <meta property="twitter:title" content="Digital Signatures - Interactive Learning Module">
+    <meta property="twitter:description" content="Comprehensive educational module for understanding digital signatures, cryptography, and security concepts with interactive features and visual learning aids.">
+    <meta property="twitter:image" content="https://yourdomain.com/assets/logo.svg">
+
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="apple-touch-icon" href="/assets/logo.svg">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/assets/favicon.svg" color="#00ACC1">
+    <meta name="msapplication-TileColor" content="#00ACC1">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    <meta name="theme-color" content="#00ACC1">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://yourdomain.com/">
+
+    <!-- External Dependencies -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
+    <!-- Security Headers - Educational Project CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; media-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;">
     <style>
         :root {
             --primary: #00ACC1; /* main blue */
@@ -1197,6 +1244,19 @@
             }
         }
 
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -1222,26 +1282,27 @@
                 <div class="progress-fill" id="progressBar"></div>
             </div>
             <div class="download-buttons">
-                <button class="download-btn" onclick="downloadOriginalSheet()">
-                    <i class="fas fa-file-pdf"></i> Download Original Sheet
+                <button class="download-btn" onclick="downloadOriginalSheet()" aria-label="Download original PDF sheet">
+                    <i class="fas fa-file-pdf" aria-hidden="true"></i> Download Original Sheet
                 </button>
-                <button class="download-btn" onclick="downloadFullPageZip()">
-                    <i class="fas fa-file-zipper"></i> Download Content (ZIP)
+                <button class="download-btn" onclick="downloadFullPageZip()" aria-label="Download all content as ZIP file">
+                    <i class="fas fa-file-zipper" aria-hidden="true"></i> Download Content (ZIP)
                 </button>
             </div>
         </div>
 
-        <div class="navigation">
-            <div class="nav-buttons">
-                <button class="nav-btn active" data-section="intro"><i class="fas fa-book-open"></i> Introduction</button>
-                <button class="nav-btn" data-section="attacks"><i class="fas fa-user-secret"></i> Attacks & Forgeries</button>
-                <button class="nav-btn" data-section="differences"><i class="fas fa-cogs"></i> Key Differences</button>
-                <button class="nav-btn" data-section="forgery-types"><i class="fas fa-mask"></i> Forgery Types</button>
-                <button class="nav-btn" data-section="rsa"><i class="fas fa-key"></i> RSA Scheme</button>
-                <button class="nav-btn" data-section="questions"><i class="fas fa-question-circle"></i> Review Questions</button>
+        <nav class="navigation" role="navigation" aria-label="Main navigation">
+            <div class="nav-buttons" role="tablist" aria-label="Section navigation">
+                <button class="nav-btn active" data-section="intro" role="tab" aria-selected="true" aria-controls="intro" id="nav-intro"><i class="fas fa-book-open" aria-hidden="true"></i> Introduction</button>
+                <button class="nav-btn" data-section="attacks" role="tab" aria-selected="false" aria-controls="attacks" id="nav-attacks"><i class="fas fa-user-secret" aria-hidden="true"></i> Attacks & Forgeries</button>
+                <button class="nav-btn" data-section="differences" role="tab" aria-selected="false" aria-controls="differences" id="nav-differences"><i class="fas fa-cogs" aria-hidden="true"></i> Key Differences</button>
+                <button class="nav-btn" data-section="forgery-types" role="tab" aria-selected="false" aria-controls="forgery-types" id="nav-forgery-types"><i class="fas fa-mask" aria-hidden="true"></i> Forgery Types</button>
+                <button class="nav-btn" data-section="rsa" role="tab" aria-selected="false" aria-controls="rsa" id="nav-rsa"><i class="fas fa-key" aria-hidden="true"></i> RSA Scheme</button>
+                <button class="nav-btn" data-section="questions" role="tab" aria-selected="false" aria-controls="questions" id="nav-questions"><i class="fas fa-question-circle" aria-hidden="true"></i> Review Questions</button>
             </div>
             <div class="nav-dropdown-container">
-                <select id="navDropdown" class="nav-dropdown">
+                <label for="navDropdown" class="sr-only">Navigate to section</label>
+                <select id="navDropdown" class="nav-dropdown" aria-label="Section navigation dropdown">
                     <option value="intro">Introduction</option>
                     <option value="attacks">Attacks & Forgeries</option>
                     <option value="differences">Key Differences</option>
@@ -1250,12 +1311,12 @@
                     <option value="questions">Review Questions</option>
                 </select>
             </div>
-        </div>
+        </nav>
 
-        <div id="intro" class="section active">
+        <section id="intro" class="section active" role="tabpanel" aria-labelledby="nav-intro" aria-hidden="false">
             <h2 class="section-title">
-                <span></i> Introduction to Digital Signatures</span>
-                <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+                <span>Introduction to Digital Signatures</span>
+                <button class="download-section-btn" onclick="downloadSectionPng(this)" aria-label="Download Introduction section as PNG"><i class="fas fa-download" aria-hidden="true"></i></button>
             </h2>
             <p class="intro-main-definition"><strong>Digital Signature</strong> is a cryptographic technique that verifies the <span class="highlight">authenticity</span>, <span class="highlight">integrity</span>, and <span class="highlight">origin</span> of a digital message or document. It is created using the sender's <span class="highlight">private key</span> and verified using their <span class="highlight">public key</span>.</p>
             
@@ -1288,11 +1349,11 @@
                 </div>
             </div>
             <div style="clear: both;"></div>
-        </div>
+        </section>
 
-        <div id="attacks" class="section">
+        <section id="attacks" class="section" role="tabpanel" aria-labelledby="nav-attacks" aria-hidden="true">
             <h2 class="section-title">Attacks and Forgeries
-                <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+                <button class="download-section-btn" onclick="downloadSectionPng(this)" aria-label="Download Attacks and Forgeries section as PNG"><i class="fas fa-download" aria-hidden="true"></i></button>
             </h2>
             <p><strong>Scenario:</strong> Assume <span class="highlight">Alice is a server that runs an automated document-signing service</span>. An attacker (Mallory) wants to forge her signature.</p>
             
@@ -1338,11 +1399,11 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </section>
 
-        <div id="differences" class="section">
+        <section id="differences" class="section" role="tabpanel" aria-labelledby="nav-differences" aria-hidden="true">
             <h2 class="section-title">Key Differences Between Attack Types
-                 <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+                 <button class="download-section-btn" onclick="downloadSectionPng(this)" aria-label="Download Key Differences section as PNG"><i class="fas fa-download" aria-hidden="true"></i></button>
             </h2>
             
             <div class="key-differences">
@@ -1366,11 +1427,11 @@
                     <li>In <strong>Directed</strong>, all messages are chosen at once. In <strong>Adaptive</strong>, the attacker learns from each signature and adjusts the next message, making it a dynamic, interactive attack.</li>
                 </ol>
             </div>
-        </div>
+        </section>
 
-        <div id="forgery-types" class="section">
+        <section id="forgery-types" class="section" role="tabpanel" aria-labelledby="nav-forgery-types" aria-hidden="true">
             <h2 class="section-title">Forgery Types
-                 <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+                 <button class="download-section-btn" onclick="downloadSectionPng(this)" aria-label="Download Forgery Types section as PNG"><i class="fas fa-download" aria-hidden="true"></i></button>
             </h2>
             <table class="attacks-table">
                 <thead>
@@ -1403,11 +1464,11 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </section>
 
-        <div id="rsa" class="section">
+        <section id="rsa" class="section" role="tabpanel" aria-labelledby="nav-rsa" aria-hidden="true">
              <h2 class="section-title">RSA Signature Scheme
-                 <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+                 <button class="download-section-btn" onclick="downloadSectionPng(this)" aria-label="Download RSA Signature Scheme section as PNG"><i class="fas fa-download" aria-hidden="true"></i></button>
             </h2>
             <div class="rsa-section">
                 <h3>Direct Digital Signature with RSA</h3>
@@ -1422,11 +1483,11 @@
                 </div>
                  <p>For confidentiality, the entire signed message can be encrypted using a symmetric key shared between the sender and receiver. This protects both the message content and the signature from eavesdropping.</p>
             </div>
-        </div>
+        </section>
 
-        <div id="questions" class="section">
+        <section id="questions" class="section" role="tabpanel" aria-labelledby="nav-questions" aria-hidden="true">
              <h2 class="section-title">Review Questions
-                 <button class="download-section-btn" onclick="downloadSectionPng(this)"><i class="fas fa-download"></i></button>
+                 <button class="download-section-btn" onclick="downloadSectionPng(this)" aria-label="Download Review Questions section as PNG"><i class="fas fa-download" aria-hidden="true"></i></button>
             </h2>
              <div class="review-questions-controls">
                 <button id="toggleAllAnswersBtn" class="toggle-all-btn">
@@ -1474,22 +1535,26 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 
     <footer>
         <div class="footer-content">
             <p>Data Security Learning Module - Digital Signatures | Created for Educational Purposes | By Eng. Eslam Osama</p>
-            <button class="copyright-btn" onclick="showCopyrightNotice()">
-                <i class="fas fa-copyright"></i> All Rights Reserved
+            <button class="copyright-btn" onclick="showCopyrightNotice()" aria-label="Show copyright notice">
+                <i class="fas fa-copyright" aria-hidden="true"></i> All Rights Reserved
             </button>
         </div>
     </footer>
 
-    <div class="notification" id="copyrightNotification">
+    <div class="notification" id="copyrightNotification" role="dialog" aria-labelledby="copyright-title" aria-modal="true">
         <div class="notification-header">
-            <div class="notification-title"><i class="fas fa-shield-alt"></i> Copyright Notice</div>
-            <button class="notification-close" onclick="hideCopyrightNotice()"><i class="fas fa-times"></i></button>
+            <div class="notification-title" id="copyright-title">
+                <i class="fas fa-shield-alt" aria-hidden="true"></i> Copyright Notice
+            </div>
+            <button class="notification-close" onclick="hideCopyrightNotice()" aria-label="Close copyright notice">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
         </div>
         <div class="notification-content">
             <p>This content is protected by copyright law. Unauthorized copying, distribution, or use of this material is strictly prohibited. The code, design, and content of this educational module are the exclusive property of the creator. Any reproduction or distribution without express written permission is a violation of copyright law.</p>
@@ -1541,19 +1606,61 @@
                 progressBar.style.width = progress + '%';
             }
 
+            // --- Scroll-based Navigation ---
+            function onScroll() {
+                const sectionIds = ['intro', 'attacks', 'differences', 'forgery-types', 'rsa', 'questions'];
+                let currentSection = 'intro';
+
+                // Find the section most visible in the viewport
+                for (const sectionId of sectionIds) {
+                    const section = document.getElementById(sectionId);
+                    if (section) {
+                        const rect = section.getBoundingClientRect();
+                        // Check if section is at least 50% visible
+                        if (rect.top <= window.innerHeight * 0.5 && rect.bottom >= window.innerHeight * 0.5) {
+                            currentSection = sectionId;
+                            break;
+                        }
+                        // Fallback: if section top is near viewport top
+                        if (rect.top <= 100 && rect.bottom >= 100) {
+                            currentSection = sectionId;
+                        }
+                    }
+                }
+
+                // Update navigation buttons
+                navButtons.forEach(btn => {
+                    const isActive = btn.dataset.section === currentSection;
+                    btn.classList.toggle('active', isActive);
+                    btn.setAttribute('aria-selected', isActive.toString());
+                });
+
+                // Update dropdown if different
+                if (navDropdown.value !== currentSection) {
+                    navDropdown.value = currentSection;
+                }
+
+                // Update progress bar
+                updateProgressBar();
+            }
+
 
             // --- Navigation ---
             function showSection(sectionId) {
                 sections.forEach(section => {
                     section.classList.remove('active');
+                    section.setAttribute('aria-hidden', 'true');
                 });
                 const activeSection = document.getElementById(sectionId);
                 if (activeSection) {
                     activeSection.classList.add('active');
+                    activeSection.removeAttribute('aria-hidden');
                 }
                 
                 navButtons.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.section === sectionId);
+                    const isActive = btn.dataset.section === sectionId;
+                    btn.classList.toggle('active', isActive);
+                    btn.setAttribute('aria-selected', isActive.toString());
                 });
                 if(navDropdown.value !== sectionId) {
                     navDropdown.value = sectionId;
@@ -1593,9 +1700,15 @@
 
 
             // --- Initial State ---
-            // Show the intro section by default
+            // Show the intro section by default and set up ARIA attributes
+            sections.forEach(section => {
+                section.setAttribute('aria-hidden', 'true');
+            });
             const initialSection = document.getElementById('intro');
-            if(initialSection) initialSection.classList.add('active');
+            if(initialSection) {
+                initialSection.classList.add('active');
+                initialSection.removeAttribute('aria-hidden');
+            }
             onScroll(); // Set initial active button state
 
             // --- Main Event Listeners ---
@@ -1776,6 +1889,39 @@
                 hideLoading();
             }
         }
+
+        // --- Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('[SW] Registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('[SW] Registration failed:', error);
+                    });
+            });
+        }
+
+        // --- Global Error Handling ---
+        window.addEventListener('error', (event) => {
+            // Suppress chrome-extension related errors
+            if (event.filename && event.filename.includes('chrome-extension://')) {
+                event.preventDefault();
+                return false;
+            }
+            console.error('Global error:', event.error);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            // Suppress chrome-extension related promise rejections
+            if (event.reason && event.reason.message &&
+                event.reason.message.includes('chrome-extension://')) {
+                event.preventDefault();
+                return false;
+            }
+            console.error('Unhandled promise rejection:', event.reason);
+        });
     </script>
 </body>
 </html>
